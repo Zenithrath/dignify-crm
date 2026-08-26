@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, Users, GitBranch, Briefcase, 
+import {
+  LayoutDashboard, Users, GitBranch, Briefcase,
   FolderKanban, CheckSquare, CreditCard, Settings,
-  ChevronLeft, Search, Bell, Plus, Menu, X, Moon, Sun
+  Search, ChevronRight, Menu as MenuIcon, X,
+  House, LogOut, Layers, Calendar,
 } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,199 +16,228 @@ interface LayoutProps {
 
 const navSections = [
   {
-    label: '',
     items: [
       { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    ]
-  },
-  {
-    label: 'SALES',
-    items: [
       { path: '/leads', label: 'Leads', icon: Users },
       { path: '/pipeline', label: 'Pipeline', icon: GitBranch },
       { path: '/clients', label: 'Clients', icon: Briefcase },
-    ]
-  },
-  {
-    label: 'WORK',
-    items: [
       { path: '/projects', label: 'Projects', icon: FolderKanban },
       { path: '/tasks', label: 'Tasks', icon: CheckSquare },
-    ]
+      { path: '/content', label: 'Content', icon: Calendar },
+    ],
   },
   {
-    label: 'FINANCE',
     items: [
       { path: '/payments', label: 'Payments', icon: CreditCard },
-    ]
-  },
-  {
-    label: 'SYSTEM',
-    items: [
-      { path: '/services', label: 'Services', icon: Settings },
+      { path: '/services', label: 'Services', icon: Layers },
       { path: '/team', label: 'Team', icon: Users },
-      { path: '/settings', label: 'Settings', icon: Settings },
-    ]
+    ],
   },
 ];
 
+const pageTitles: Record<string, string> = {
+  '/': 'Overviews',
+  '/leads': 'Leads',
+  '/pipeline': 'Pipeline',
+  '/clients': 'Clients',
+  '/projects': 'Projects',
+  '/tasks': 'Tasks',
+  '/content': 'Content Schedule',
+  '/payments': 'Payments',
+  '/services': 'Services',
+  '/team': 'Team',
+  '/settings': 'Settings',
+};
+
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('darkMode') === 'true' || 
-             window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
+
+  useGSAP(() => {
+    gsap.from('.gs-sidebar-item', {
+      opacity: 0,
+      x: -14,
+      duration: 0.4,
+      stagger: 0.03,
+      ease: 'power2.out',
+    });
   });
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('darkMode', darkMode.toString());
-  }, [darkMode]);
+  const currentTitle = pageTitles[location.pathname] ?? location.pathname.split('/')[1] ?? 'Overviews';
+
+  const sidebar = (
+    <TooltipProvider delay={200}>
+      <div className="flex flex-col h-full items-center py-4 gap-1">
+        {/* Logo */}
+        <Link to="/" className="mb-4" aria-label="Dignify CRM home">
+          <img src="/logo.png" alt="Dignify" className="w-9 h-9 object-contain rounded-xl" />
+        </Link>
+
+        {/* Navigation */}
+        <nav className="flex-1 flex flex-col items-center gap-1.5" aria-label="Main navigation">
+          {navSections.map((section, idx) => (
+            <div key={idx} className="flex flex-col items-center gap-1.5">
+              {idx > 0 && <div className="w-6 h-px bg-white/10 my-1" aria-hidden="true" />}
+              {section.items.map((item) => {
+                const isActive =
+                  item.path === '/'
+                    ? location.pathname === '/'
+                    : location.pathname.startsWith(item.path);
+                const Icon = item.icon;
+                return (
+                  <Tooltip key={item.path}>
+                    <TooltipTrigger
+                      render={
+                        <Link
+                          to={item.path}
+                          onClick={() => setMobileOpen(false)}
+                          aria-current={isActive ? 'page' : undefined}
+                          aria-label={item.label}
+                          className={`gs-sidebar-item flex w-10 h-10 items-center justify-center rounded-full transition-colors ${
+                            isActive
+                              ? 'bg-primary text-primary-foreground'
+                              : 'text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <Icon className="w-[18px] h-[18px]" strokeWidth={1.8} />
+                        </Link>
+                      }
+                    />
+                    <TooltipContent side="right">{item.label}</TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
+
+        {/* Bottom: settings + logout */}
+        <div className="flex flex-col items-center gap-1.5 mt-4 pt-4 border-t border-white/10">
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Link
+                  to="/settings"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Settings"
+                  className={`gs-sidebar-item flex w-10 h-10 items-center justify-center rounded-full transition-colors ${
+                    location.pathname.startsWith('/settings')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <Settings className="w-[18px] h-[18px]" strokeWidth={1.8} />
+                </Link>
+              }
+            />
+            <TooltipContent side="right">Settings</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  className="gs-sidebar-item flex w-10 h-10 items-center justify-center rounded-full text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-red-400 transition-colors"
+                  aria-label="Logout"
+                >
+                  <LogOut className="w-[18px] h-[18px]" strokeWidth={1.8} />
+                </button>
+              }
+            />
+            <TooltipContent side="right">Logout</TooltipContent>
+          </Tooltip>
+          <button
+            className="mt-1 w-9 h-9 rounded-full overflow-hidden border border-white/10 bg-muted flex items-center justify-center flex-shrink-0"
+            aria-label="Profile"
+          >
+            <img src="/logo.png" alt="Daniel" className="w-full h-full object-cover" />
+          </button>
+        </div>
+      </div>
+    </TooltipProvider>
+  );
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-dark-950">
+    <div className="flex h-screen bg-dark-950 overflow-hidden">
       {/* Mobile overlay */}
       {mobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50
-        bg-white dark:bg-dark-900 border-r border-gray-200 dark:border-dark-700
-        transition-all duration-200
-        ${sidebarOpen ? 'w-64' : 'w-20'}
-        ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-dark-700">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-accent-teal to-accent-green rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">D</span>
-              </div>
-              {sidebarOpen && (
-                <span className="font-semibold text-gray-900 dark:text-white">DIGNIFY CRM</span>
-              )}
-            </Link>
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden lg:flex p-1 rounded hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-500 dark:text-gray-400"
-            >
-              <ChevronLeft className={`w-5 h-5 transition-transform ${!sidebarOpen ? 'rotate-180' : ''}`} />
-            </button>
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-1 rounded hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-500 dark:text-gray-400"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto py-4 px-3">
-            {navSections.map((section, idx) => (
-              <div key={idx} className="mb-6">
-                {section.label && sidebarOpen && (
-                  <div className="px-3 mb-2 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    {section.label}
-                  </div>
-                )}
-                <div className="space-y-1">
-                  {section.items.map((item) => {
-                    const isActive = location.pathname === item.path;
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        onClick={() => setMobileOpen(false)}
-                        className={`
-                          flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium
-                          transition-colors duration-150
-                          ${isActive 
-                            ? 'bg-gray-100 dark:bg-dark-700 text-gray-900 dark:text-white' 
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-800 hover:text-gray-900 dark:hover:text-white'}
-                        `}
-                      >
-                        <Icon className="w-5 h-5 flex-shrink-0" />
-                        {sidebarOpen && <span>{item.label}</span>}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </nav>
-        </div>
+      {/* Sidebar — desktop */}
+      <aside className="hidden lg:flex w-[72px] flex-shrink-0 border-r border-white/10 bg-[oklch(0.145_0_0)] text-[oklch(0.985_0_0)] items-center justify-center">
+        {sidebar}
       </aside>
+
+      {/* Sidebar — mobile drawer */}
+      {mobileOpen && (
+        <aside className="fixed lg:hidden inset-y-0 left-0 z-50 w-[72px] bg-[oklch(0.145_0_0)] text-[oklch(0.985_0_0)] border-r border-white/10 shadow-dark-lift flex items-center justify-center">
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="absolute top-3 right-1.5 icon-btn !w-6 !h-6 border-white/10 text-[oklch(0.985_0_0)]"
+            aria-label="Close menu"
+          >
+            <X className="w-3 h-3" />
+          </button>
+          {sidebar}
+        </aside>
+      )}
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="flex items-center justify-between h-16 px-6 bg-white dark:bg-dark-900 border-b border-gray-200 dark:border-dark-700">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-500 dark:text-gray-400"
+        <header className="flex items-center gap-4 h-14 px-4 lg:px-5 flex-shrink-0 border-b border-border">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="lg:hidden icon-btn"
+            aria-label="Open menu"
+          >
+            <MenuIcon className="w-4 h-4" />
+          </button>
+
+          {/* Breadcrumb */}
+          <nav className="hidden sm:flex items-center gap-1.5 text-[13px]" aria-label="Breadcrumb">
+            <Link
+              to="/"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Home"
             >
-              <Menu className="w-5 h-5" />
-            </button>
-            
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-10 pr-4 py-2 w-64 bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 dark:focus:ring-accent-teal/30 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-              />
-            </div>
+              <House className="w-4 h-4" strokeWidth={1.8} />
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
+            <span className="font-semibold text-foreground">{currentTitle}</span>
+          </nav>
+
+          {/* Search */}
+          <div className="relative flex-1 max-w-md mx-auto">
+            <Search
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-500 pointer-events-none"
+              strokeWidth={1.8}
+            />
+            <input
+              type="search"
+              placeholder="Search..."
+              aria-label="Search"
+              className="input !pl-10"
+            />
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-500 dark:text-gray-400"
-            >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-
-            <Button variant="primary" size="sm" className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
-              <Plus className="w-4 h-4 mr-1.5" />
-              New Lead
-            </Button>
-            
-            <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-500 dark:text-gray-400 relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-            </button>
-
-            <div className="flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-dark-700">
-              <div className="w-8 h-8 bg-gradient-to-br from-accent-teal to-accent-green rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-white">D</span>
-              </div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block">Daniel</span>
+          {/* User */}
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg border border-border overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
+              <img src="/logo.png" alt="User" className="w-full h-full object-cover" />
+            </div>
+            <div className="hidden md:block leading-tight">
+              <p className="text-[13px] font-bold text-foreground">Daniel</p>
+              <p className="text-[11px] text-muted-foreground">@dignify</p>
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-dark-950">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto px-4 lg:px-5 pb-6">{children}</main>
       </div>
     </div>
   );
