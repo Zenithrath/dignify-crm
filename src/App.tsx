@@ -13,6 +13,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { ContentSchedulePage } from './pages/ContentSchedulePage';
 import { WorkPage } from './pages/WorkPage';
 import { WorkDetailPage } from './pages/WorkDetailPage';
+import { CalendarPage } from './pages/CalendarPage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/projects/:id" element={<Navigate to="/work" replace />} />
           <Route path="/tasks" element={<TasksPage />} />
           <Route path="/content" element={<ContentSchedulePage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/work" element={<WorkPage />} />
           <Route path="/work/:id" element={<WorkDetailPage />} />
           <Route path="/payments" element={<PaymentsPage />} />
