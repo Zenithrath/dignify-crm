@@ -1,159 +1,133 @@
-import { Plus, DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { DollarSign, TrendingUp, Clock, Plus } from 'lucide-react';
+import type { Payment } from '../types';
 import { Button } from '../components/ui/Button';
-import type { Payment, PaymentStatus, PaymentType } from '../types';
+import { Modal } from '../components/ui/Modal';
 
 const mockPayments: Payment[] = [
-  {
-    id: 'PAY-2026-0001',
-    projectId: 'PRJ-2026-0001',
-    clientId: 'CLI-2026-0001',
-    type: 'DP',
-    amount: 25000000,
-    dueDate: '2026-07-25',
-    paidDate: '2026-07-24',
-    status: 'Paid',
-    paymentMethod: 'Bank Transfer',
-    notes: 'DP received via BCA',
-  },
-  {
-    id: 'PAY-2026-0002',
-    projectId: 'PRJ-2026-0001',
-    clientId: 'CLI-2026-0001',
-    type: 'Milestone',
-    amount: 30000000,
-    dueDate: '2026-08-30',
-    paidDate: '',
-    status: 'Pending',
-    paymentMethod: '',
-    notes: 'Second milestone after design approval',
-  },
-  {
-    id: 'PAY-2026-0003',
-    projectId: 'PRJ-2026-0002',
-    clientId: 'CLI-2026-0002',
-    type: 'DP',
-    amount: 15000000,
-    dueDate: '2026-08-10',
-    paidDate: '2026-08-09',
-    status: 'Paid',
-    paymentMethod: 'Bank Transfer',
-    notes: 'DP received',
-  },
+  { id: 'PAY-001', projectId: 'PRJ-001', clientId: 'CLI-001', type: 'DP', amount: 25000000, dueDate: '2026-07-25', paidDate: '2026-07-24', status: 'Paid', paymentMethod: 'Bank Transfer', notes: 'DP via BCA' },
+  { id: 'PAY-002', projectId: 'PRJ-001', clientId: 'CLI-001', type: 'Milestone', amount: 35000000, dueDate: '2026-08-30', paidDate: '', status: 'Pending', paymentMethod: '', notes: 'Milestone 1' },
+  { id: 'PAY-003', projectId: 'PRJ-002', clientId: 'CLI-002', type: 'DP', amount: 7500000, dueDate: '2026-08-05', paidDate: '2026-08-04', status: 'Paid', paymentMethod: 'E-Wallet', notes: 'DP via GoPay' },
 ];
 
-const statusColors: Record<PaymentStatus, string> = {
-  Pending: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-  Partial: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
-  Paid: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-  Overdue: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-  Cancelled: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400',
+const statusBadge: Record<string, string> = {
+  Paid: 'badge-lime', Pending: 'badge-gold', Partial: 'badge-orange', Overdue: 'badge-coral', Cancelled: 'badge-gray',
 };
 
-const typeLabels: Record<PaymentType, string> = {
-  DP: 'Down Payment',
-  Milestone: 'Milestone',
-  'Final Payment': 'Final Payment',
-  Maintenance: 'Maintenance',
-  Other: 'Other',
-};
+const totalReceived = mockPayments.filter((p) => p.status === 'Paid').reduce((s, p) => s + p.amount, 0);
+const totalOutstanding = mockPayments.filter((p) => p.status === 'Pending').reduce((s, p) => s + p.amount, 0);
 
 export function PaymentsPage() {
-  const totalReceived = mockPayments
-    .filter(p => p.status === 'Paid')
-    .reduce((sum, p) => sum + p.amount, 0);
-  
-  const totalOutstanding = mockPayments
-    .filter(p => p.status !== 'Paid' && p.status !== 'Cancelled')
-    .reduce((sum, p) => sum + p.amount, 0);
+  const [showNewPayment, setShowNewPayment] = useState(false);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Payments</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Track project payments</p>
-        </div>
-        <Button className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
-          <Plus className="w-4 h-4 mr-1.5" />
-          Record Payment
+    <div className="space-y-4 max-w-[1400px]">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h1 className="text-xl font-extrabold text-foreground">Payments</h1>
+        <Button variant="primary" size="sm" onClick={() => setShowNewPayment(true)}>
+          <Plus className="w-4 h-4 mr-1" /> New Payment
         </Button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card p-5">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-green-500 to-green-600 p-2.5 rounded-xl shadow-lg">
-              <DollarSign className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Received</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">Rp {(totalReceived / 1000000).toFixed(0)}M</p>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="card glass p-4">
+          <div className="flex items-center gap-2 mb-2"><DollarSign className="w-4 h-4 text-emerald-400" /><span className="text-[12px] text-dark-400">Received</span></div>
+          <p className="text-xl font-extrabold text-foreground">Rp {(totalReceived / 1e6).toFixed(0)}jt</p>
         </div>
-        <div className="card p-5">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2.5 rounded-xl shadow-lg">
-              <AlertCircle className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Outstanding</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">Rp {(totalOutstanding / 1000000).toFixed(0)}M</p>
-            </div>
-          </div>
+        <div className="card glass p-4">
+          <div className="flex items-center gap-2 mb-2"><Clock className="w-4 h-4 text-gold" /><span className="text-[12px] text-dark-400">Outstanding</span></div>
+          <p className="text-xl font-extrabold text-foreground">Rp {(totalOutstanding / 1e6).toFixed(0)}jt</p>
         </div>
-        <div className="card p-5">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 rounded-xl shadow-lg">
-              <TrendingUp className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Avg Project Value</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">Rp 65M</p>
-            </div>
-          </div>
+        <div className="card glass p-4">
+          <div className="flex items-center gap-2 mb-2"><TrendingUp className="w-4 h-4 text-orange-400" /><span className="text-[12px] text-dark-400">Avg Project</span></div>
+          <p className="text-xl font-extrabold text-foreground">Rp {Math.round((totalReceived + totalOutstanding) / mockPayments.length / 1e6)}jt</p>
         </div>
       </div>
 
-      {/* Table */}
       <div className="card overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50 dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Payment</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Amount</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Due Date</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Method</th>
+          <thead>
+            <tr className="border-t border-white/[0.05]">
+              <th className="table-header">Type</th>
+              <th className="table-header">Amount</th>
+              <th className="table-header">Due Date</th>
+              <th className="table-header">Paid Date</th>
+              <th className="table-header">Status</th>
+              <th className="table-header">Method</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
-            {mockPayments.map((payment) => (
-              <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
-                <td className="px-4 py-3">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{payment.id}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{payment.notes}</p>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{typeLabels[payment.type]}</td>
-                <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                  Rp {(payment.amount / 1000000).toFixed(0)}M
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                  {new Date(payment.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`badge ${statusColors[payment.status]}`}>
-                    {payment.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{payment.paymentMethod || '-'}</td>
+          <tbody>
+            {mockPayments.map((p) => (
+              <tr key={p.id} className="table-row">
+                <td className="table-cell font-semibold text-foreground">{p.type}</td>
+                <td className="table-cell font-semibold text-foreground">Rp {(p.amount / 1e6).toFixed(0)}jt</td>
+                <td className="table-cell text-dark-400">{p.dueDate}</td>
+                <td className="table-cell text-dark-400">{p.paidDate || '—'}</td>
+                <td className="table-cell"><span className={statusBadge[p.status]}>{p.status}</span></td>
+                <td className="table-cell text-dark-300">{p.paymentMethod || '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* New Payment Modal */}
+      <Modal
+        isOpen={showNewPayment}
+        onClose={() => setShowNewPayment(false)}
+        title="Record Payment"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setShowNewPayment(false)}>Cancel</Button>
+            <Button size="sm">Save Payment</Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Type</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select type</option>
+                {['DP', 'Milestone', 'Final Payment', 'Maintenance', 'Other'].map((t) => (
+                  <option key={t} value={t} className="bg-dark-800">{t}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Amount (IDR)</label>
+              <input type="number" placeholder="25000000" className="input" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Due Date</label>
+              <input type="date" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Status</label>
+              <select className="select" defaultValue="Pending">
+                {['Pending', 'Partial', 'Paid', 'Overdue', 'Cancelled'].map((s) => (
+                  <option key={s} value={s} className="bg-dark-800">{s}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Payment Method</label>
+            <select className="select" defaultValue="">
+              <option value="" disabled className="bg-dark-800">Select method</option>
+              {['Bank Transfer', 'E-Wallet', 'Cash', 'Credit Card', 'Other'].map((m) => (
+                <option key={m} value={m} className="bg-dark-800">{m}</option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Notes</label>
+            <textarea rows={3} placeholder="Payment notes..." className="input !rounded-xl" />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

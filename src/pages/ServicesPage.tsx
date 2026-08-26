@@ -1,148 +1,114 @@
-import { Search, Plus, Edit2, Trash2 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { useState } from 'react';
+import { Edit, Trash2, Plus } from 'lucide-react';
 import type { Service } from '../types';
+import { Button } from '../components/ui/Button';
+import { Modal } from '../components/ui/Modal';
 
 const mockServices: Service[] = [
-  {
-    id: 'SRV-001',
-    category: 'Website Development',
-    serviceName: 'Company Profile Website',
-    level: 'Standard',
-    minimumPrice: 25000000,
-    maximumPrice: 75000000,
-    estimatedDuration: '4-6 weeks',
-    description: 'Professional company profile with 5-7 pages',
-    active: true,
-  },
-  {
-    id: 'SRV-002',
-    category: 'Website Development',
-    serviceName: 'E-commerce Website',
-    level: 'Advanced',
-    minimumPrice: 50000000,
-    maximumPrice: 150000000,
-    estimatedDuration: '8-12 weeks',
-    description: 'Full-featured online store with payment integration',
-    active: true,
-  },
-  {
-    id: 'SRV-003',
-    category: 'UI/UX Design',
-    serviceName: 'Mobile App Design',
-    level: 'Standard',
-    minimumPrice: 20000000,
-    maximumPrice: 50000000,
-    estimatedDuration: '3-4 weeks',
-    description: 'Complete mobile app UI/UX design with prototype',
-    active: true,
-  },
-  {
-    id: 'SRV-004',
-    category: 'AI Solutions',
-    serviceName: 'AI Chatbot Integration',
-    level: 'Standard',
-    minimumPrice: 15000000,
-    maximumPrice: 40000000,
-    estimatedDuration: '2-4 weeks',
-    description: 'Custom AI chatbot for customer support',
-    active: true,
-  },
-  {
-    id: 'SRV-005',
-    category: 'N8N Workflow Automation',
-    serviceName: 'Business Process Automation',
-    level: 'Standard',
-    minimumPrice: 10000000,
-    maximumPrice: 30000000,
-    estimatedDuration: '1-3 weeks',
-    description: 'Automate repetitive business tasks with N8N',
-    active: true,
-  },
-  {
-    id: 'SRV-006',
-    category: 'API Integration',
-    serviceName: 'Third-party API Integration',
-    level: 'Advanced',
-    minimumPrice: 20000000,
-    maximumPrice: 60000000,
-    estimatedDuration: '3-6 weeks',
-    description: 'Integrate external APIs into your system',
-    active: true,
-  },
+  { id: 'SRV-001', category: 'Web Development', serviceName: 'Company Profile Website', level: 'Standard', minimumPrice: 50000000, maximumPrice: 150000000, estimatedDuration: '2-4 weeks', description: 'Professional company profile website', active: true },
+  { id: 'SRV-002', category: 'Web Development', serviceName: 'E-Commerce Website', level: 'Premium', minimumPrice: 100000000, maximumPrice: 300000000, estimatedDuration: '4-8 weeks', description: 'Full-featured online store', active: true },
+  { id: 'SRV-003', category: 'Design', serviceName: 'Instagram Content Package', level: 'Starter', minimumPrice: 5000000, maximumPrice: 15000000, estimatedDuration: '1 month', description: '12 posts + 20 stories per month', active: true },
+  { id: 'SRV-004', category: 'Design', serviceName: 'Brand Identity', level: 'Standard', minimumPrice: 15000000, maximumPrice: 40000000, estimatedDuration: '2-3 weeks', description: 'Logo, colors, typography guide', active: true },
+  { id: 'SRV-005', category: 'Automation', serviceName: 'N8N Workflow Setup', level: 'Custom', minimumPrice: 10000000, maximumPrice: 50000000, estimatedDuration: '1-2 weeks', description: 'Custom automation workflows', active: false },
+  { id: 'SRV-006', category: 'Consulting', serviceName: 'Digital Strategy', level: 'Premium', minimumPrice: 20000000, maximumPrice: 50000000, estimatedDuration: '1 week', description: 'Business digital transformation plan', active: true },
 ];
 
+const categoryBadge: Record<string, string> = {
+  'Web Development': 'badge-orange', Design: 'badge-lav', Automation: 'badge-sky', Consulting: 'badge-gold',
+};
+
 export function ServicesPage() {
+  const [showNewService, setShowNewService] = useState(false);
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Services</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Rate card and service catalog</p>
-        </div>
-        <Button className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
-          <Plus className="w-4 h-4 mr-1.5" />
-          Add Service
+    <div className="space-y-4 max-w-[1400px]">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h1 className="text-xl font-extrabold text-foreground">Services</h1>
+        <Button variant="primary" size="sm" onClick={() => setShowNewService(true)}>
+          <Plus className="w-4 h-4 mr-1" /> New Service
         </Button>
       </div>
-
-      <div className="card p-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search services..."
-            className="input pl-10"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {mockServices.map((service) => (
-          <div
-            key={service.id}
-            className="card-hover p-5"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <span className="text-xs bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
-                  {service.category}
-                </span>
-                <h3 className="font-medium text-gray-900 dark:text-white mt-2">{service.serviceName}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{service.level}</p>
-              </div>
-              <div className="flex items-center gap-1">
-                <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg text-gray-500 dark:text-gray-400">
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg text-gray-500 dark:text-gray-400">
-                  <Trash2 className="w-4 h-4" />
-                </button>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {mockServices.map((s) => (
+          <div key={s.id} className="card glass p-4 group hover:border-border transition-all">
+            <div className="flex items-start justify-between mb-2">
+              <span className={categoryBadge[s.category] || 'badge-gray'}>{s.category}</span>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="icon-btn !w-6 !h-6 !rounded" aria-label="Edit"><Edit className="w-3 h-3" /></button>
+                <button className="icon-btn !w-6 !h-6 !rounded hover:!border-red-500/30 hover:!text-red-400" aria-label="Delete"><Trash2 className="w-3 h-3" /></button>
               </div>
             </div>
-            
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{service.description}</p>
-            
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Price Range</span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  Rp {(service.minimumPrice / 1000000).toFixed(0)}M - {(service.maximumPrice / 1000000).toFixed(0)}M
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Duration</span>
-                <span className="text-gray-700 dark:text-gray-300">{service.estimatedDuration}</span>
-              </div>
+            <h3 className="font-semibold text-foreground text-[14px] mb-1">{s.serviceName}</h3>
+            <p className="text-[12px] text-dark-400 mb-3 line-clamp-2">{s.description}</p>
+            <div className="flex items-center justify-between text-[12px]">
+              <span className="text-dark-400">{s.level}</span>
+              <span className="font-bold text-orange-400">Rp {(s.minimumPrice / 1e6).toFixed(0)}-{(s.maximumPrice / 1e6).toFixed(0)}jt</span>
             </div>
-            
-            <div className="pt-3 border-t border-gray-100 dark:border-dark-700">
-              <span className={`text-xs font-medium ${service.active ? 'text-accent-teal' : 'text-gray-400 dark:text-gray-500'}`}>
-                {service.active ? 'Active' : 'Inactive'}
-              </span>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04] text-[11px] text-dark-500">
+              <span>{s.estimatedDuration}</span>
+              <span className={s.active ? 'text-emerald-400' : 'text-dark-500'}>{s.active ? 'Active' : 'Inactive'}</span>
             </div>
           </div>
         ))}
       </div>
+
+      {/* New Service Modal */}
+      <Modal
+        isOpen={showNewService}
+        onClose={() => setShowNewService(false)}
+        title="New Service"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setShowNewService(false)}>Cancel</Button>
+            <Button size="sm">Save Service</Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Service Name</label>
+            <input type="text" placeholder="Company Profile Website" className="input" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Category</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select category</option>
+                {['Web Development', 'Design', 'Automation', 'Consulting'].map((c) => (
+                  <option key={c} value={c} className="bg-dark-800">{c}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Level</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select level</option>
+                {['Starter', 'Standard', 'Premium', 'Custom'].map((l) => (
+                  <option key={l} value={l} className="bg-dark-800">{l}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Min Price (IDR)</label>
+              <input type="number" placeholder="5000000" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Max Price (IDR)</label>
+              <input type="number" placeholder="150000000" className="input" />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Estimated Duration</label>
+            <input type="text" placeholder="2-4 weeks" className="input" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Description</label>
+            <textarea rows={3} placeholder="Service description..." className="input !rounded-xl" />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

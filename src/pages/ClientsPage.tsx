@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Plus, Mail, Phone } from 'lucide-react';
+import { Search, Plus, Mail, Phone, ArrowUpRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { Modal } from '../components/ui/Modal';
 import type { Client } from '../types';
 
 const mockClients: Client[] = [
@@ -31,63 +33,116 @@ const mockClients: Client[] = [
 ];
 
 export function ClientsPage() {
+  const [showNewClient, setShowNewClient] = useState(false);
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5 max-w-[1400px]">
+      <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Clients</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{mockClients.length} active clients</p>
+          <h1 className="text-xl font-extrabold text-foreground">Clients</h1>
+          <p className="text-[13px] text-dark-400 mt-1">
+            {mockClients.length} active clients
+          </p>
         </div>
-        <Button className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
+        <Button onClick={() => setShowNewClient(true)}>
           <Plus className="w-4 h-4 mr-1.5" />
           Add Client
         </Button>
       </div>
 
-      <div className="card p-4">
+      <div className="card p-3.5">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search clients..."
-            className="input pl-10"
-          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" />
+          <input type="text" placeholder="Search clients..." className="input !pl-11" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {mockClients.map((client) => (
-          <Link
-            key={client.id}
-            to={`/clients/${client.id}`}
-            className="card-hover p-5"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">{client.businessName}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{client.contactPerson}</p>
+          <Link key={client.id} to={`/clients/${client.id}`} className="card-hover group p-5">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-400 font-extrabold flex items-center justify-center">
+                  {client.businessName.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-foreground">{client.businessName}</h3>
+                  <p className="text-xs font-medium text-dark-400">{client.contactPerson}</p>
+                </div>
               </div>
-              <span className="text-xs bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
-                {client.industry}
-              </span>
+              <ArrowUpRight className="w-4 h-4 text-dark-500 group-hover:text-teal-400 transition-colors" />
             </div>
             <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Phone className="w-4 h-4 text-green-500" />
+              <div className="flex items-center gap-2.5 text-sm text-dark-200">
+                <Phone className="w-4 h-4 text-teal-400" />
                 {client.whatsapp}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Mail className="w-4 h-4 text-blue-500" />
+              <div className="flex items-center gap-2.5 text-sm text-dark-200">
+                <Mail className="w-4 h-4 text-sky-400" />
                 {client.email}
               </div>
             </div>
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-dark-700">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Projects: Rp {(client.totalProjectValue / 1000000).toFixed(0)}M</span>
-              <span className="text-xs text-gray-400 dark:text-gray-500">Since {new Date(client.clientSince).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
+            <div className="flex items-center justify-between pt-4 border-t border-border">
+              <span className="text-sm font-extrabold text-foreground">
+                Rp {(client.totalProjectValue / 1000000).toFixed(0)}M
+              </span>
+              <span className="badge-lav">{client.industry}</span>
             </div>
           </Link>
         ))}
       </div>
+
+      {/* New Client Modal */}
+      <Modal
+        isOpen={showNewClient}
+        onClose={() => setShowNewClient(false)}
+        title="Add Client"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setShowNewClient(false)}>Cancel</Button>
+            <Button size="sm">Save Client</Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Business Name</label>
+            <input type="text" placeholder="PT Berkah Sejahtera" className="input" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Contact Person</label>
+              <input type="text" placeholder="Rudi Hartono" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Industry</label>
+              <input type="text" placeholder="Manufacturing" className="input" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">WhatsApp</label>
+              <input type="text" placeholder="6281111222333" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Email</label>
+              <input type="email" placeholder="rudi@berkah.co.id" className="input" />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">PIC</label>
+            <select className="select" defaultValue="">
+              <option value="" disabled className="bg-dark-800">Select PIC</option>
+              <option value="Daniel" className="bg-dark-800">Daniel</option>
+              <option value="Ignas" className="bg-dark-800">Ignas</option>
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Notes</label>
+            <textarea rows={3} placeholder="Client notes..." className="input !rounded-xl" />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

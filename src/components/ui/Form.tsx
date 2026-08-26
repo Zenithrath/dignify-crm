@@ -1,5 +1,7 @@
 import { forwardRef } from 'react';
-import { clsx } from 'clsx';
+import { cn } from '@/lib/utils';
+import { Input as ShadcnInput } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -11,23 +13,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, helperText, ...props }, ref) => {
     return (
       <div className="space-y-1.5">
-        {label && (
-          <label className="block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
-        <input
+        {label && <Label>{label}</Label>}
+        <ShadcnInput
           ref={ref}
-          className={clsx(
-            'w-full px-3 py-2 border rounded-lg text-sm',
-            'focus:outline-none focus:ring-2 focus:ring-gray-900/10',
-            error ? 'border-red-300 focus:border-red-500' : 'border-gray-300',
+          className={cn(
+            error && '!ring-2 !ring-destructive/40 !border-destructive/40',
             className
           )}
           {...props}
         />
-        {error && <p className="text-xs text-red-600">{error}</p>}
-        {helperText && !error && <p className="text-xs text-gray-500">{helperText}</p>}
+        {error && <p className="text-xs font-semibold text-destructive">{error}</p>}
+        {helperText && !error && (
+          <p className="text-xs font-medium text-muted-foreground">{helperText}</p>
+        )}
       </div>
     );
   }
@@ -45,23 +43,20 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, label, error, helperText, ...props }, ref) => {
     return (
       <div className="space-y-1.5">
-        {label && (
-          <label className="block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
+        {label && <Label>{label}</Label>}
         <textarea
           ref={ref}
-          className={clsx(
-            'w-full px-3 py-2 border rounded-lg text-sm resize-none',
-            'focus:outline-none focus:ring-2 focus:ring-gray-900/10',
-            error ? 'border-red-300 focus:border-red-500' : 'border-gray-300',
+          className={cn(
+            'flex min-h-16 w-full rounded-md border border-input bg-input/20 px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30 resize-none',
+            error && '!ring-2 !ring-destructive/40 !border-destructive/40',
             className
           )}
           {...props}
         />
-        {error && <p className="text-xs text-red-600">{error}</p>}
-        {helperText && !error && <p className="text-xs text-gray-500">{helperText}</p>}
+        {error && <p className="text-xs font-semibold text-destructive">{error}</p>}
+        {helperText && !error && (
+          <p className="text-xs font-medium text-muted-foreground">{helperText}</p>
+        )}
       </div>
     );
   }
@@ -79,17 +74,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, label, error, options, ...props }, ref) => {
     return (
       <div className="space-y-1.5">
-        {label && (
-          <label className="block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
+        {label && <Label>{label}</Label>}
         <select
           ref={ref}
-          className={clsx(
-            'w-full px-3 py-2 border rounded-lg text-sm',
-            'focus:outline-none focus:ring-2 focus:ring-gray-900/10',
-            error ? 'border-red-300 focus:border-red-500' : 'border-gray-300',
+          className={cn(
+            'flex h-7 w-full rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30 cursor-pointer appearance-none pr-8',
+            error && '!ring-2 !ring-destructive/40',
             className
           )}
           {...props}
@@ -100,7 +90,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-xs font-semibold text-destructive">{error}</p>}
       </div>
     );
   }

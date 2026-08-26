@@ -14,8 +14,8 @@ export function LoadingSpinner({ size = 'md', text }: LoadingSpinnerProps) {
 
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <Loader2 className={`${sizeClasses[size]} text-gray-400 animate-spin`} />
-      {text && <p className="mt-3 text-sm text-gray-500">{text}</p>}
+      <Loader2 className={`${sizeClasses[size]} text-primary animate-spin`} />
+      {text && <p className="mt-3 text-sm font-semibold text-muted-foreground">{text}</p>}
     </div>
   );
 }
@@ -29,10 +29,14 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className="text-gray-300 mb-4">{icon}</div>
-      <h3 className="text-lg font-medium text-gray-900 mb-1">{title}</h3>
-      <p className="text-sm text-gray-500 text-center max-w-sm mb-6">{description}</p>
+    <div className="flex flex-col items-center justify-center py-14 px-4">
+      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-4">
+        {icon}
+      </div>
+      <h3 className="text-lg font-extrabold text-foreground mb-1">{title}</h3>
+      <p className="text-sm font-medium text-muted-foreground text-center max-w-sm mb-6">
+        {description}
+      </p>
       {action}
     </div>
   );
@@ -45,16 +49,18 @@ interface ErrorStateProps {
 
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-        <span className="text-red-600 text-xl">!</span>
+    <div className="flex flex-col items-center justify-center py-14 px-4">
+      <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+        <span className="text-destructive text-2xl font-extrabold">!</span>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-1">Something went wrong</h3>
-      <p className="text-sm text-gray-500 text-center max-w-sm mb-6">{message}</p>
+      <h3 className="text-lg font-extrabold text-foreground mb-1">Something went wrong</h3>
+      <p className="text-sm font-medium text-muted-foreground text-center max-w-sm mb-6">
+        {message}
+      </p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800"
+          className="px-5 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-bold hover:bg-primary/80 transition-opacity cursor-pointer"
         >
           Try again
         </button>

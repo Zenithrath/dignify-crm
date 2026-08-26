@@ -1,132 +1,88 @@
-import { Save, Database, Shield, Bell } from 'lucide-react';
+import { useState } from 'react';
+import { Settings, Shield, Bell } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
-export function SettingsPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Settings</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Application configuration</p>
-      </div>
+const tabs = [
+  { id: 'general', label: 'General', icon: Settings },
+  { id: 'security', label: 'Security', icon: Shield },
+  { id: 'notifications', label: 'Notifications', icon: Bell },
+];
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Settings Navigation */}
-        <div className="card p-4">
-          <nav className="space-y-1">
-            {[
-              { label: 'General', icon: Database },
-              { label: 'Security', icon: Shield },
-              { label: 'Notifications', icon: Bell },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.label}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 rounded-lg transition-colors"
-                >
-                  <Icon className="w-5 h-5" />
-                  {item.label}
-                </button>
-              );
-            })}
-          </nav>
+export function SettingsPage() {
+  const [activeTab, setActiveTab] = useState('general');
+  const [notifications, setNotifications] = useState({ email: true, push: false, weekly: true });
+
+  return (
+    <div className="space-y-4 max-w-[1400px]">
+      <h1 className="text-xl font-extrabold text-foreground">Settings</h1>
+      <div className="flex gap-4">
+        {/* Sidebar */}
+        <div className="w-48 flex-shrink-0 space-y-1">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-foreground/[0.04] text-foreground border border-border'
+                    : 'text-dark-400 hover:text-foreground hover:bg-foreground/[0.04]'
+                }`}
+              >
+                <Icon className="w-4 h-4" strokeWidth={1.8} />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Settings Content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* General Settings */}
-          <div className="card p-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">General Settings</h2>
+        {/* Content */}
+        <div className="flex-1 card glass p-5">
+          {activeTab === 'general' && (
             <div className="space-y-4">
+              <h2 className="text-base font-bold text-foreground mb-4">General Settings</h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Company Name</label>
-                <input
-                  type="text"
-                  defaultValue="DIGNIFY"
-                  className="input"
-                />
+                <label className="block text-[12px] font-semibold text-dark-300 mb-1.5">Company Name</label>
+                <input type="text" defaultValue="Dignify" className="input" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Google Sheet ID</label>
-                <input
-                  type="text"
-                  placeholder="Enter your Google Sheet ID"
-                  className="input"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">The spreadsheet that stores your CRM data</p>
+                <label className="block text-[12px] font-semibold text-dark-300 mb-1.5">Google Sheet ID</label>
+                <input type="text" placeholder="Enter Sheet ID" className="input" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Apps Script Web App URL</label>
-                <input
-                  type="text"
-                  placeholder="https://script.google.com/macros/s/xxx/exec"
-                  className="input"
-                />
+                <label className="block text-[12px] font-semibold text-dark-300 mb-1.5">Apps Script URL</label>
+                <input type="text" placeholder="Enter Apps Script URL" className="input" />
               </div>
+              <Button size="sm">Save Changes</Button>
             </div>
-          </div>
-
-          {/* Security Settings */}
-          <div className="card p-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Security</h2>
+          )}
+          {activeTab === 'security' && (
             <div className="space-y-4">
+              <h2 className="text-base font-bold text-foreground mb-4">Security</h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Allowed Emails</label>
-                <textarea
-                  rows={3}
-                  placeholder="Enter one email per line"
-                  className="input resize-none"
-                  defaultValue="daniel@dignify.id
-ignas@dignify.id"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Only these emails can access the CRM</p>
+                <label className="block text-[12px] font-semibold text-dark-300 mb-1.5">Allowed Emails</label>
+                <textarea rows={4} placeholder="Enter emails, one per line" className="input !rounded-lg" />
               </div>
+              <Button size="sm">Save</Button>
             </div>
-          </div>
-
-          {/* Notification Settings */}
-          <div className="card p-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Notifications</h2>
+          )}
+          {activeTab === 'notifications' && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Daily Follow-up Reminder</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Send email summary of today's follow-ups</p>
+              <h2 className="text-base font-bold text-foreground mb-4">Notifications</h2>
+              {(['email', 'push', 'weekly'] as const).map((key) => (
+                <div key={key} className="flex items-center justify-between py-2">
+                  <span className="text-[13px] text-dark-200 capitalize">{key} notifications</span>
+                  <button
+                    onClick={() => setNotifications((n) => ({ ...n, [key]: !n[key] }))}
+                    className={`toggle-switch ${notifications[key] ? 'toggle-switch-active' : ''}`}
+                    aria-label={`${key} notifications`}
+                  />
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 dark:bg-dark-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-teal"></div>
-                </label>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Project Deadline Alert</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Alert when project deadline is approaching</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 dark:bg-dark-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-teal"></div>
-                </label>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Payment Due Reminder</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Remind when payment is due or overdue</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 dark:bg-dark-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-teal"></div>
-                </label>
-              </div>
+              ))}
+              <Button size="sm">Save</Button>
             </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
-              <Save className="w-4 h-4 mr-1.5" />
-              Save Settings
-            </Button>
-          </div>
+          )}
         </div>
       </div>
     </div>

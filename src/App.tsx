@@ -13,6 +13,7 @@ import { PaymentsPage } from './pages/PaymentsPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { TeamPage } from './pages/TeamPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ContentSchedulePage } from './pages/ContentSchedulePage';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
           <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/content" element={<ContentSchedulePage />} />
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/team" element={<TeamPage />} />

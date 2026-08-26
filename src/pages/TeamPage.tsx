@@ -1,90 +1,100 @@
-import { Plus, Edit2 } from 'lucide-react';
+import { useState } from 'react';
+import { Edit, Plus } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import type { User, UserRole } from '../types';
+import { Modal } from '../components/ui/Modal';
 
-const mockTeam: User[] = [
-  {
-    id: 'USR-001',
-    name: 'Daniel',
-    email: 'daniel@dignify.id',
-    role: 'Admin',
-    active: true,
-  },
-  {
-    id: 'USR-002',
-    name: 'Ignas',
-    email: 'ignas@dignify.id',
-    role: 'Member',
-    active: true,
-  },
+const mockTeam = [
+  { id: 'USR-001', name: 'Daniel', email: 'daniel@dignify.id', role: 'Admin', active: true },
+  { id: 'USR-002', name: 'Ignas', email: 'ignas@dignify.id', role: 'Member', active: true },
 ];
 
-const roleColors: Record<UserRole, string> = {
-  Admin: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
-  Member: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
-  Viewer: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400',
-};
+const roleBadge: Record<string, string> = { Admin: 'badge-orange', Member: 'badge-sky', Viewer: 'badge-gray' };
 
 export function TeamPage() {
+  const [showNewMember, setShowNewMember] = useState(false);
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Team</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{mockTeam.length} team members</p>
-        </div>
-        <Button className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
-          <Plus className="w-4 h-4 mr-1.5" />
-          Add Member
+    <div className="space-y-4 max-w-[1400px]">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h1 className="text-xl font-extrabold text-foreground">Team</h1>
+        <Button variant="primary" size="sm" onClick={() => setShowNewMember(true)}>
+          <Plus className="w-4 h-4 mr-1" /> Add Member
         </Button>
       </div>
-
       <div className="card overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50 dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Member</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Role</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+          <thead>
+            <tr className="border-t border-white/[0.05]">
+              <th className="table-header">Member</th>
+              <th className="table-header">Email</th>
+              <th className="table-header">Role</th>
+              <th className="table-header">Status</th>
+              <th className="table-header"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
-            {mockTeam.map((member) => (
-              <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-accent-teal to-accent-green rounded-full flex items-center justify-center">
-                      <span className="font-medium text-white">{member.name.charAt(0)}</span>
+          <tbody>
+            {mockTeam.map((m) => (
+              <tr key={m.id} className="table-row">
+                <td className="table-cell">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[11px] font-bold text-orange-400">{m.name.charAt(0)}</span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{member.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{member.id}</p>
+                      <p className="font-semibold text-foreground text-[13px]">{m.name}</p>
+                      <p className="text-[11px] text-dark-500">{m.id}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{member.email}</td>
-                <td className="px-4 py-3">
-                  <span className={`badge ${roleColors[member.role]}`}>
-                    {member.role}
+                <td className="table-cell text-dark-300">{m.email}</td>
+                <td className="table-cell"><span className={roleBadge[m.role]}>{m.role}</span></td>
+                <td className="table-cell">
+                  <span className={`flex items-center gap-1.5 text-[12px] ${m.active ? 'text-emerald-400' : 'text-dark-500'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${m.active ? 'bg-emerald-400' : 'bg-dark-500'}`} />
+                    {m.active ? 'Active' : 'Inactive'}
                   </span>
                 </td>
-                <td className="px-4 py-3">
-                  <span className={`text-sm font-medium ${member.active ? 'text-accent-teal' : 'text-gray-400 dark:text-gray-500'}`}>
-                    {member.active ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg text-gray-500 dark:text-gray-400">
-                    <Edit2 className="w-4 h-4" />
-                  </button>
+                <td className="table-cell">
+                  <button className="icon-btn !w-7 !h-7" aria-label="Edit"><Edit className="w-3.5 h-3.5" /></button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* New Member Modal */}
+      <Modal
+        isOpen={showNewMember}
+        onClose={() => setShowNewMember(false)}
+        title="Add Team Member"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setShowNewMember(false)}>Cancel</Button>
+            <Button size="sm">Save Member</Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Name</label>
+            <input type="text" placeholder="John Doe" className="input" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Email</label>
+            <input type="email" placeholder="john@dignify.id" className="input" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Role</label>
+            <select className="select" defaultValue="">
+              <option value="" disabled className="bg-dark-800">Select role</option>
+              {['Admin', 'Member', 'Viewer'].map((r) => (
+                <option key={r} value={r} className="bg-dark-800">{r}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

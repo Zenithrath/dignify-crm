@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { 
-  ArrowLeft, Phone, Mail, Globe, 
-  MessageSquare, Calendar, Clock, Plus, ChevronRight
+import { Link } from 'react-router-dom';
+import {
+  ArrowLeft, Phone, Mail, Globe, MessageSquare,
+  Calendar, Clock, Plus, ChevronRight,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import type { Activity } from '../types';
@@ -34,7 +34,7 @@ const mockActivities: Activity[] = [
     id: 'ACT-2026-0001',
     leadId: 'LEAD-2026-0001',
     type: 'WhatsApp',
-    description: 'Sent company profile portfolio',
+    description: 'Sent company profile portfolio.',
     createdBy: 'Daniel',
     createdAt: '2026-08-25',
   },
@@ -42,7 +42,7 @@ const mockActivities: Activity[] = [
     id: 'ACT-2026-0002',
     leadId: 'LEAD-2026-0001',
     type: 'Internal Note',
-    description: 'Lead interested in a company profile website. Budget around 75M.',
+    description: 'Lead interested in a company profile website.',
     createdBy: 'Daniel',
     createdAt: '2026-08-24',
   },
@@ -50,7 +50,7 @@ const mockActivities: Activity[] = [
     id: 'ACT-2026-0003',
     leadId: 'LEAD-2026-0001',
     type: 'Meeting',
-    description: 'Initial discovery call - discussed requirements',
+    description: 'Initial discovery call — discussed requirements.',
     createdBy: 'Daniel',
     createdAt: '2026-08-22',
   },
@@ -58,47 +58,46 @@ const mockActivities: Activity[] = [
     id: 'ACT-2026-0004',
     leadId: 'LEAD-2026-0001',
     type: 'Email',
-    description: 'Sent introduction email with service catalog',
+    description: 'Sent introduction email with service catalog.',
     createdBy: 'Daniel',
     createdAt: '2026-08-20',
   },
 ];
 
-const activityTypeColors: Record<string, string> = {
-  WhatsApp: 'bg-green-100 text-green-700',
-  Email: 'bg-blue-100 text-blue-700',
-  'Phone Call': 'bg-purple-100 text-purple-700',
-  Meeting: 'bg-amber-100 text-amber-700',
-  'Follow-up': 'bg-cyan-100 text-cyan-700',
-  Proposal: 'bg-orange-100 text-orange-700',
-  'Internal Note': 'bg-gray-100 text-gray-700',
-  'Status Change': 'bg-indigo-100 text-indigo-700',
+const activityBadge: Record<string, string> = {
+  WhatsApp: 'badge-mint',
+  Email: 'badge-sky',
+  'Phone Call': 'badge-lav',
+  Meeting: 'badge-lime',
+  'Follow-up': 'badge-mint',
+  Proposal: 'badge-coral',
+  'Internal Note': 'badge-gray',
+  'Status Change': 'badge-lav',
 };
 
 export function LeadDetailPage() {
-  void useParams();
   const [showAddActivity, setShowAddActivity] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 max-w-[1400px]">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link to="/leads" className="p-2 hover:bg-gray-100 rounded-lg">
-          <ArrowLeft className="w-5 h-5 text-gray-500" />
+      <div className="flex flex-wrap items-center gap-4">
+        <Link to="/leads" className="icon-btn" aria-label="Back">
+          <ArrowLeft className="w-5 h-5" />
         </Link>
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-gray-900">{mockLead.businessName}</h1>
-            <span className="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
-              {mockLead.pipelineStage}
-            </span>
-            <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">
-              {mockLead.priority}
-            </span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-xl font-extrabold text-ink dark:text-foreground">
+              {mockLead.businessName}
+            </h1>
+            <span className="badge-lime">{mockLead.pipelineStage}</span>
+            <span className="badge-coral">{mockLead.priority}</span>
           </div>
-          <p className="text-sm text-gray-500 mt-1">{mockLead.id} · {mockLead.contactPerson}</p>
+          <p className="text-sm font-medium text-ink/40 dark:text-dark-400 mt-0.5">
+            {mockLead.id} · {mockLead.contactPerson}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Button variant="secondary" size="sm">
             <Calendar className="w-4 h-4 mr-1.5" />
             Schedule Follow-up
@@ -110,41 +109,39 @@ export function LeadDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Summary Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Main */}
+        <div className="lg:col-span-2 space-y-5">
+          {/* Pastel summary */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <p className="text-xs text-gray-500 mb-1">Estimated Value</p>
-              <p className="text-lg font-semibold text-gray-900">
-                Rp {(mockLead.estimatedValue / 1000000).toFixed(0)}M
-              </p>
+            <div className="pastel-lime !p-4">
+              <p className="text-[11px] font-bold text-emerald-400/60">Estimated Value</p>
+              <p className="text-xl font-extrabold text-foreground mt-1">Rp {(mockLead.estimatedValue / 1000000).toFixed(0)}M</p>
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <p className="text-xs text-gray-500 mb-1">PIC</p>
-              <p className="text-lg font-semibold text-gray-900">{mockLead.pic}</p>
+            <div className="pastel-mint !p-4">
+              <p className="text-[11px] font-bold text-teal-400/60">PIC</p>
+              <p className="text-xl font-extrabold text-foreground mt-1">{mockLead.pic}</p>
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <p className="text-xs text-gray-500 mb-1">Source</p>
-              <p className="text-lg font-semibold text-gray-900">{mockLead.leadSource}</p>
+            <div className="pastel-coral !p-4">
+              <p className="text-[11px] font-bold text-red-400/60">Source</p>
+              <p className="text-xl font-extrabold text-foreground mt-1">{mockLead.leadSource}</p>
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <p className="text-xs text-gray-500 mb-1">Category</p>
-              <p className="text-lg font-semibold text-gray-900">{mockLead.category}</p>
+            <div className="pastel-lav !p-4">
+              <p className="text-[11px] font-bold text-purple-400/60">Category</p>
+              <p className="text-xl font-extrabold text-foreground mt-1">{mockLead.category}</p>
             </div>
           </div>
 
-          {/* Next Action */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          {/* Next action */}
+          <div className="card p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-amber-500" />
-              <h2 className="text-lg font-medium text-gray-900">Next Action</h2>
+              <Clock className="w-5 h-5 text-emerald-400" />
+              <h2 className="text-lg font-extrabold text-foreground">Next Action</h2>
             </div>
-            <div className="flex items-center justify-between p-4 bg-amber-50 rounded-lg">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/15">
               <div>
-                <p className="font-medium text-gray-900">{mockLead.nextAction}</p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="font-bold text-foreground">{mockLead.nextAction}</p>
+                <p className="text-xs font-semibold text-dark-300 mt-0.5">
                   {new Date(mockLead.nextFollowUp).toLocaleString('en-GB', {
                     weekday: 'long',
                     day: 'numeric',
@@ -154,17 +151,19 @@ export function LeadDetailPage() {
                   })}
                 </p>
               </div>
-              <Button size="sm" variant="secondary">Mark Complete</Button>
+              <Button size="sm" variant="primary">
+                Mark Complete
+              </Button>
             </div>
           </div>
 
-          {/* Activity Timeline */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-gray-900">Activity Timeline</h2>
+          {/* Activity timeline */}
+          <div className="card p-5">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-extrabold text-foreground">Activity Timeline</h2>
               <button
                 onClick={() => setShowAddActivity(!showAddActivity)}
-                className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
+                className="text-sm font-bold text-teal-400 hover:underline cursor-pointer inline-flex items-center gap-1"
               >
                 <Plus className="w-4 h-4" />
                 Add Activity
@@ -172,25 +171,19 @@ export function LeadDetailPage() {
             </div>
 
             {showAddActivity && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <select className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm">
-                    <option>WhatsApp</option>
-                    <option>Email</option>
-                    <option>Phone Call</option>
-                    <option>Meeting</option>
-                    <option>Internal Note</option>
+              <div className="mb-5 p-4 rounded-2xl bg-dark-900 border border-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <select className="select" defaultValue="WhatsApp">
+                    {['WhatsApp', 'Email', 'Phone Call', 'Meeting', 'Internal Note'].map((t) => (
+                      <option key={t} className="bg-dark-800">{t}</option>
+                    ))}
                   </select>
-                  <input
-                    type="text"
-                    placeholder="Description"
-                    className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                  />
+                  <input type="text" placeholder="Description" className="input" />
                 </div>
                 <div className="flex justify-end gap-2">
                   <button
                     onClick={() => setShowAddActivity(false)}
-                    className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+                    className="px-4 py-2 text-sm font-bold text-dark-300 hover:bg-foreground/[0.05] rounded-lg cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -199,32 +192,32 @@ export function LeadDetailPage() {
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-1">
               {mockActivities.map((activity, idx) => (
                 <div key={activity.id} className="flex gap-4">
-                  <div className="relative">
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-gray-600">
+                  <div className="relative flex flex-col items-center">
+                    <div className="w-9 h-9 rounded-full bg-teal-500/15 border border-teal-500/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-extrabold text-teal-400">
                         {activity.createdBy.charAt(0)}
                       </span>
                     </div>
                     {idx < mockActivities.length - 1 && (
-                      <div className="absolute top-8 left-1/2 -translate-x-1/2 w-px h-full bg-gray-200" />
+                      <div className="w-0.5 flex-1 bg-foreground/[0.04] my-1" />
                     )}
                   </div>
-                  <div className="flex-1 pb-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-gray-900">{activity.createdBy}</span>
-                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${activityTypeColors[activity.type]}`}>
-                        {activity.type}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(activity.createdAt).toLocaleDateString('en-GB', { 
-                          day: 'numeric', month: 'short', year: 'numeric' 
+                  <div className="flex-1 pb-5">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="font-bold text-foreground text-sm">{activity.createdBy}</span>
+                      <span className={activityBadge[activity.type]}>{activity.type}</span>
+                      <span className="text-xs font-semibold text-dark-500">
+                        {new Date(activity.createdAt).toLocaleDateString('en-GB', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
                         })}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-700">{activity.description}</p>
+                    <p className="text-sm font-medium text-dark-200">{activity.description}</p>
                   </div>
                 </div>
               ))}
@@ -233,100 +226,91 @@ export function LeadDetailPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* Contact */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="text-sm font-medium text-gray-900 mb-4">Contact Information</h3>
-            <div className="space-y-3">
+          <div className="card p-5">
+            <h3 className="font-extrabold text-foreground mb-4">Contact Information</h3>
+            <div className="space-y-2.5">
               <a
                 href={`https://wa.me/${mockLead.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/15 hover:bg-teal-500/15 transition-colors cursor-pointer group"
               >
-                <Phone className="w-5 h-5 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">WhatsApp</p>
-                  <p className="text-xs text-gray-500">{mockLead.whatsapp}</p>
+                <span className="w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-foreground" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground">WhatsApp</p>
+                  <p className="text-xs font-medium text-dark-400 truncate">{mockLead.whatsapp}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
+                <ChevronRight className="w-4 h-4 text-dark-500 group-hover:text-teal-400" />
               </a>
               <a
                 href={`mailto:${mockLead.email}`}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/15 hover:bg-sky-500/15 transition-colors cursor-pointer group"
               >
-                <Mail className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Email</p>
-                  <p className="text-xs text-gray-500">{mockLead.email}</p>
+                <span className="w-9 h-9 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-foreground" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground">Email</p>
+                  <p className="text-xs font-medium text-dark-400 truncate">{mockLead.email}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
+                <ChevronRight className="w-4 h-4 text-dark-500 group-hover:text-sky-400" />
               </a>
-              {mockLead.instagramWebsite && (
-                <a
-                  href={`https://${mockLead.instagramWebsite}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Globe className="w-5 h-5 text-purple-600" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Website</p>
-                    <p className="text-xs text-gray-500">{mockLead.instagramWebsite}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
-                </a>
-              )}
+              <a
+                href={`https://${mockLead.instagramWebsite}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/15 hover:bg-purple-500/15 transition-colors cursor-pointer group"
+              >
+                <span className="w-9 h-9 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0">
+                  <Globe className="w-4 h-4 text-foreground" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground">Website</p>
+                  <p className="text-xs font-medium text-dark-400 truncate">{mockLead.instagramWebsite}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-dark-500 group-hover:text-purple-400" />
+              </a>
             </div>
           </div>
 
           {/* Details */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="text-sm font-medium text-gray-900 mb-4">Details</h3>
+          <div className="card p-5">
+            <h3 className="font-extrabold text-foreground mb-4">Details</h3>
             <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-500">Interested Service</span>
-                <span className="text-sm text-gray-900">{mockLead.interestedService}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-500">Last Contact</span>
-                <span className="text-sm text-gray-900">
-                  {new Date(mockLead.lastContact).toLocaleDateString('en-GB', { 
-                    day: 'numeric', month: 'short', year: 'numeric' 
-                  })}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-500">Created</span>
-                <span className="text-sm text-gray-900">
-                  {new Date(mockLead.createdAt).toLocaleDateString('en-GB', { 
-                    day: 'numeric', month: 'short', year: 'numeric' 
-                  })}
-                </span>
-              </div>
+              {[
+                { label: 'Interested Service', value: mockLead.interestedService },
+                { label: 'Last Contact', value: new Date(mockLead.lastContact).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) },
+                { label: 'Created', value: new Date(mockLead.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) },
+              ].map((row) => (
+                <div key={row.label} className="flex justify-between items-center">
+                  <span className="text-xs font-semibold text-dark-400">{row.label}</span>
+                  <span className="text-sm font-bold text-foreground">{row.value}</span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Notes */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="text-sm font-medium text-gray-900 mb-4">Notes</h3>
-            <p className="text-sm text-gray-700">{mockLead.notes}</p>
+          <div className="card p-5">
+            <h3 className="font-extrabold text-foreground mb-3">Notes</h3>
+            <p className="text-sm font-medium text-dark-200">{mockLead.notes}</p>
           </div>
 
           {/* Actions */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="text-sm font-medium text-gray-900 mb-4">Actions</h3>
-            <div className="space-y-2">
-              <Button className="w-full justify-start" variant="secondary">
-                Change Stage
-              </Button>
-              <Button className="w-full justify-start" variant="secondary">
-                Edit Lead
-              </Button>
-              <Button className="w-full justify-start" variant="ghost">
-                Convert to Client
-              </Button>
-            </div>
+          <div className="card p-3.5 space-y-2">
+            <Button variant="secondary" className="w-full justify-start !rounded-2xl">
+              Change Stage
+            </Button>
+            <Button variant="secondary" className="w-full justify-start !rounded-2xl">
+              Edit Lead
+            </Button>
+            <Button variant="mint" className="w-full justify-start !rounded-2xl">
+              Convert to Client
+            </Button>
           </div>
         </div>
       </div>

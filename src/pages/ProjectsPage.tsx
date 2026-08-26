@@ -1,140 +1,123 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Plus, Calendar, Users, FolderKanban } from 'lucide-react';
+import { FolderKanban, Calendar, DollarSign, Plus } from 'lucide-react';
+import type { Project } from '../types';
 import { Button } from '../components/ui/Button';
-import type { Project, ProjectStage, ProjectStatus } from '../types';
+import { Modal } from '../components/ui/Modal';
 
 const mockProjects: Project[] = [
-  {
-    id: 'PRJ-2026-0001',
-    projectName: 'PT Berkah - Company Profile',
-    clientId: 'CLI-2026-0001',
-    service: 'Website Development',
-    pic: 'Daniel',
-    teamMembers: ['Daniel', 'Ignas'],
-    startDate: '2026-07-20',
-    deadline: '2026-09-15',
-    stage: 'Development',
-    status: 'On Track',
-    progress: 65,
-    projectValue: 85000000,
-    driveLink: 'https://drive.google.com/folder/berkah',
-    notes: 'Corporate website with 5 pages',
-  },
-  {
-    id: 'PRJ-2026-0002',
-    projectName: 'Klinik Sehat - Website Redesign',
-    clientId: 'CLI-2026-0002',
-    service: 'UI/UX Design',
-    pic: 'Ignas',
-    teamMembers: ['Ignas'],
-    startDate: '2026-08-05',
-    deadline: '2026-08-30',
-    stage: 'UI Design',
-    status: 'At Risk',
-    progress: 40,
-    projectValue: 45000000,
-    driveLink: 'https://drive.google.com/folder/sehat',
-    notes: 'Modern clinic website',
-  },
+  { id: 'PRJ-001', projectName: 'PT Berkah - Company Profile', clientId: 'CLI-001', service: 'Website Development', pic: 'Daniel', teamMembers: ['Daniel', 'Ignas'], startDate: '2026-07-20', deadline: '2026-09-15', stage: 'Development', status: 'On Track', progress: 65, projectValue: 85000000, driveLink: '', notes: '' },
+  { id: 'PRJ-002', projectName: 'UMKM Bakery - Instagram Package', clientId: 'CLI-002', service: 'Content Creation', pic: 'Ignas', teamMembers: ['Ignas'], startDate: '2026-08-01', deadline: '2026-08-31', stage: 'UI Design', status: 'On Track', progress: 40, projectValue: 15000000, driveLink: '', notes: '' },
 ];
 
-const stageColors: Record<ProjectStage, string> = {
-  'Waiting Brief': 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
-  'Discovery': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
-  'Wireframe': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
-  'UI Design': 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400',
-  'Development': 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-  'Testing': 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400',
-  'Revision': 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
-  'Deployment': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-  'Completed': 'bg-accent-teal/20 text-accent-teal',
-};
-
-const statusColors: Record<ProjectStatus, string> = {
-  'Not Started': 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400',
-  'On Track': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-  'At Risk': 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-  'Delayed': 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-  'Completed': 'bg-accent-teal/20 text-accent-teal',
+const statusBadge: Record<string, string> = {
+  'On Track': 'badge-lime', 'At Risk': 'badge-orange', Delayed: 'badge-coral', Completed: 'badge-mint',
 };
 
 export function ProjectsPage() {
+  const [showNewProject, setShowNewProject] = useState(false);
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 max-w-[1400px]">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Projects</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{mockProjects.length} active projects</p>
+          <h1 className="text-xl font-extrabold text-foreground">Projects</h1>
+          <p className="text-[13px] text-dark-400 mt-0.5">{mockProjects.length} active projects</p>
         </div>
-        <Button className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
-          <Plus className="w-4 h-4 mr-1.5" />
-          New Project
+        <Button variant="primary" size="sm" onClick={() => setShowNewProject(true)}>
+          <Plus className="w-4 h-4 mr-1" /> New Project
         </Button>
       </div>
-
-      <div className="card p-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search projects..."
-            className="input pl-10"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        {mockProjects.map((project) => (
-          <Link
-            key={project.id}
-            to={`/projects/${project.id}`}
-            className="block card-hover p-5"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">{project.projectName}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{project.service}</p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {mockProjects.map((p) => (
+          <Link key={p.id} to={`/projects/${p.id}`} className="card glass p-4 hover:border-border transition-all group">
+            <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className={`badge ${stageColors[project.stage] || ''}`}>
-                  {project.stage}
-                </span>
-                <span className={`badge ${statusColors[project.status] || ''}`}>
-                  {project.status}
-                </span>
+                <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                  <FolderKanban className="w-4 h-4 text-orange-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground text-[13px] group-hover:text-orange-400 transition-colors">{p.projectName}</p>
+                  <p className="text-[11px] text-dark-500">{p.service}</p>
+                </div>
               </div>
+              <span className={statusBadge[p.status] || 'badge-gray'}>{p.status}</span>
             </div>
-
-            <div className="flex items-center gap-6 mb-4 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-center gap-1.5">
-                <Users className="w-4 h-4" />
-                {project.pic}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
-                {new Date(project.deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <FolderKanban className="w-4 h-4" />
-                Rp {(project.projectValue / 1000000).toFixed(0)}M
-              </div>
+            <div className="progress-bar mb-3">
+              <div className="progress-fill" style={{ width: `${p.progress}%` }} />
             </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Progress</span>
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{project.progress}%</span>
-              </div>
-              <div className="w-full bg-gray-100 dark:bg-dark-900 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-accent-teal to-accent-green h-2 rounded-full transition-all"
-                  style={{ width: `${project.progress}%` }}
-                />
-              </div>
+            <div className="flex items-center justify-between text-[11px] text-dark-400">
+              <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{p.deadline}</span>
+              <span className="flex items-center gap-1 font-semibold text-foreground"><DollarSign className="w-3 h-3 text-orange-400" />Rp {(p.projectValue / 1e6).toFixed(0)}jt</span>
+            </div>
+            <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-white/[0.04]">
+              <span className="text-[11px] text-dark-500">PIC:</span>
+              <span className="text-[11px] font-semibold text-foreground">{p.pic}</span>
             </div>
           </Link>
         ))}
       </div>
+
+      {/* New Project Modal */}
+      <Modal
+        isOpen={showNewProject}
+        onClose={() => setShowNewProject(false)}
+        title="New Project"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setShowNewProject(false)}>Cancel</Button>
+            <Button size="sm">Save Project</Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Project Name</label>
+            <input type="text" placeholder="PT Berkah - Company Profile" className="input" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Service</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select service</option>
+                {['Website Development', 'Content Creation', 'Brand Identity', 'Instagram Design', 'Mobile App Design', 'Consulting'].map((s) => (
+                  <option key={s} value={s} className="bg-dark-800">{s}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">PIC</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select PIC</option>
+                <option value="Daniel" className="bg-dark-800">Daniel</option>
+                <option value="Ignas" className="bg-dark-800">Ignas</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Start Date</label>
+              <input type="date" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Deadline</label>
+              <input type="date" className="input" />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Project Value (IDR)</label>
+            <input type="number" placeholder="85000000" className="input" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Google Drive Link</label>
+            <input type="url" placeholder="https://drive.google.com/..." className="input" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Notes</label>
+            <textarea rows={3} placeholder="Project notes..." className="input !rounded-xl" />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

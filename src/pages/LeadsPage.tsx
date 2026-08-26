@@ -1,373 +1,200 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  createColumnHelper,
-  flexRender,
+  useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  flexRender,
+  createColumnHelper,
 } from '@tanstack/react-table';
-import { Search, Plus, Filter, ArrowUpDown } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import type { Lead, PipelineStage } from '../types';
 import { Button } from '../components/ui/Button';
-import type { Lead, PipelineStage, Priority } from '../types';
+import { Modal } from '../components/ui/Modal';
 
-interface LeadWithId extends Lead {
-  id: string;
-}
-
-const columnHelper = createColumnHelper<LeadWithId>();
-
-const mockLeads: LeadWithId[] = [
+const mockLeads: Lead[] = [
   {
-    id: 'LEAD-2026-0001',
-    businessName: 'PT Maju Jaya',
-    contactPerson: 'Budi Santoso',
-    whatsapp: '628123456789',
-    email: 'budi@majujaya.com',
-    instagramWebsite: 'majujaya.com',
-    category: 'Company',
-    leadSource: 'Instagram',
-    interestedService: 'Website Development',
-    pic: 'Daniel',
-    estimatedValue: 75000000,
-    priority: 'High',
-    pipelineStage: 'Proposal',
-    lastContact: '2026-08-25',
-    nextFollowUp: '2026-08-26',
-    nextAction: 'Send proposal document',
-    notes: 'Interested in corporate website',
-    createdAt: '2026-08-20',
-    updatedAt: '2026-08-25',
+    id: 'LEAD-2026-0001', businessName: 'PT Maju Jaya', contactPerson: 'Budi Santoso',
+    whatsapp: '628123456789', email: 'budi@majujaya.com', instagramWebsite: 'majujaya.com',
+    category: 'Company', leadSource: 'Instagram', interestedService: 'Website Development',
+    pic: 'Daniel', estimatedValue: 75000000, priority: 'High', pipelineStage: 'Proposal',
+    lastContact: '2026-08-25', nextFollowUp: '2026-08-26', nextAction: 'Send proposal',
+    notes: 'Interested in corporate website', createdAt: '2026-08-20', updatedAt: '2026-08-25',
   },
   {
-    id: 'LEAD-2026-0002',
-    businessName: 'StartupHub Indonesia',
-    contactPerson: 'Rina Wijaya',
-    whatsapp: '628987654321',
-    email: 'rina@startuphub.id',
-    instagramWebsite: 'startuphub.id',
-    category: 'Startup',
-    leadSource: 'Referral',
-    interestedService: 'UI/UX Design',
-    pic: 'Ignas',
-    estimatedValue: 50000000,
-    priority: 'Medium',
-    pipelineStage: 'Qualified',
-    lastContact: '2026-08-24',
-    nextFollowUp: '2026-08-26',
-    nextAction: 'Schedule discovery call',
-    notes: 'Mobile app design project',
-    createdAt: '2026-08-18',
-    updatedAt: '2026-08-24',
+    id: 'LEAD-2026-0002', businessName: 'StartupHub Indonesia', contactPerson: 'Arlene McCoy',
+    whatsapp: '628987654321', email: 'arlene@startuphub.id', instagramWebsite: '@startuphub.id',
+    category: 'Startup', leadSource: 'Event', interestedService: 'Mobile App Design',
+    pic: 'Daniel', estimatedValue: 120000000, priority: 'High', pipelineStage: 'Qualified',
+    lastContact: '2026-08-26', nextFollowUp: '2026-08-27', nextAction: 'Discovery call',
+    notes: 'Met at Tech Summit', createdAt: '2026-08-11', updatedAt: '2026-08-26',
   },
   {
-    id: 'LEAD-2026-0003',
-    businessName: 'Kampus Tech',
-    contactPerson: 'Dr. Ahmad',
-    whatsapp: '628111222333',
-    email: 'ahmad@kampustech.ac.id',
-    instagramWebsite: 'kampustech.ac.id',
-    category: 'Education',
-    leadSource: 'Campus',
-    interestedService: 'AI Solutions',
-    pic: 'Daniel',
-    estimatedValue: 120000000,
-    priority: 'High',
-    pipelineStage: 'Meeting',
-    lastContact: '2026-08-23',
-    nextFollowUp: '2026-08-27',
-    nextAction: 'Prepare demo presentation',
-    notes: 'AI-powered student management system',
-    createdAt: '2026-08-15',
-    updatedAt: '2026-08-23',
+    id: 'LEAD-2026-0003', businessName: 'UMKM Bakery Kita', contactPerson: 'Sari Dewi',
+    whatsapp: '628123456791', email: 'sari@bakerykita.com', instagramWebsite: '@bakerykita',
+    category: 'UMKM Small', leadSource: 'WhatsApp', interestedService: 'Instagram Design',
+    pic: 'Ignas', estimatedValue: 15000000, priority: 'Medium', pipelineStage: 'Won',
+    lastContact: '2026-08-24', nextFollowUp: '2026-09-01', nextAction: 'Kickoff project',
+    notes: 'DP received', createdAt: '2026-07-28', updatedAt: '2026-08-24',
   },
   {
-    id: 'LEAD-2026-0004',
-    businessName: 'Warung Bu Ani',
-    contactPerson: 'Ani Setiawan',
-    whatsapp: '628444555666',
-    email: 'ani@warungbuanii.com',
-    instagramWebsite: '@warungbuanii',
-    category: 'UMKM Small',
-    leadSource: 'WhatsApp',
-    interestedService: 'N8N Workflow Automation',
-    pic: 'Ignas',
-    estimatedValue: 15000000,
-    priority: 'Low',
-    pipelineStage: 'Contacted',
-    lastContact: '2026-08-22',
-    nextFollowUp: '2026-08-29',
-    nextAction: 'Follow up on WhatsApp',
-    notes: 'Needs inventory automation',
-    createdAt: '2026-08-20',
-    updatedAt: '2026-08-22',
+    id: 'LEAD-2026-0004', businessName: 'Klinik Sehat Prima', contactPerson: 'Devon Lane',
+    whatsapp: '628123456792', email: 'devon@kliniksehat.id', instagramWebsite: 'kliniksehat.id',
+    category: 'UMKM Medium', leadSource: 'Referral', interestedService: 'Website Development',
+    pic: 'Daniel', estimatedValue: 45000000, priority: 'High', pipelineStage: 'Negotiation',
+    lastContact: '2026-08-23', nextFollowUp: '2026-08-27', nextAction: 'Final pricing',
+    notes: 'Referred by PT Berkah', createdAt: '2026-07-30', updatedAt: '2026-08-23',
   },
   {
-    id: 'LEAD-2026-0005',
-    businessName: 'PT Sejahtera',
-    contactPerson: 'Hendra Kusuma',
-    whatsapp: '628777888999',
-    email: 'hendra@sejahtera.co.id',
-    instagramWebsite: 'sejahtera.co.id',
-    category: 'UMKM Large',
-    leadSource: 'LinkedIn',
-    interestedService: 'API Integration',
-    pic: 'Daniel',
-    estimatedValue: 95000000,
-    priority: 'High',
-    pipelineStage: 'Negotiation',
-    lastContact: '2026-08-25',
-    nextFollowUp: '2026-08-26',
-    nextAction: 'Final price negotiation',
-    notes: 'ERP integration project',
-    createdAt: '2026-08-10',
-    updatedAt: '2026-08-25',
+    id: 'LEAD-2026-0005', businessName: 'Kampus Tech Community', contactPerson: 'Rizky Pratama',
+    whatsapp: '628123456793', email: 'rizky@kampustech.org', instagramWebsite: '@kampustech',
+    category: 'Education', leadSource: 'Campus', interestedService: 'Landing Page',
+    pic: 'Ignas', estimatedValue: 10000000, priority: 'Low', pipelineStage: 'Contacted',
+    lastContact: '2026-08-18', nextFollowUp: '2026-08-29', nextAction: 'Send catalog',
+    notes: 'Seminar audience', createdAt: '2026-08-05', updatedAt: '2026-08-18',
   },
 ];
 
+const stageColors: Record<PipelineStage, string> = {
+  Prospect: 'badge-lav', Contacted: 'badge-sky', Responded: 'badge-mint',
+  Qualified: 'badge-orange', Meeting: 'badge-gold', Proposal: 'badge-orange',
+  Negotiation: 'badge-gold', Won: 'badge-lime', Lost: 'badge-coral',
+};
+
+const priorityColors: Record<string, string> = {
+  High: 'badge-orange', Medium: 'badge-gold', Low: 'badge-gray',
+};
+
+const col = createColumnHelper<Lead>();
+
 const columns = [
-  columnHelper.accessor('businessName', {
+  col.accessor('businessName', {
     header: 'Business',
     cell: (info) => (
-      <Link 
-        to={`/leads/${info.row.original.id}`}
-        className="font-medium text-gray-900 dark:text-white hover:text-accent-teal dark:hover:text-accent-teal"
-      >
+      <Link to={`/leads/${info.row.original.id}`} className="font-semibold text-foreground hover:text-orange-400 transition-colors">
         {info.getValue()}
       </Link>
     ),
   }),
-  columnHelper.accessor('contactPerson', {
-    header: 'Contact',
-    cell: (info) => (
-      <span className="text-gray-600 dark:text-gray-400">{info.getValue()}</span>
-    ),
+  col.accessor('contactPerson', { header: 'Contact' }),
+  col.accessor('leadSource', { header: 'Source' }),
+  col.accessor('category', {
+    header: 'Category',
+    cell: (info) => <span className="badge-gray">{info.getValue()}</span>,
   }),
-  columnHelper.accessor('pic', {
-    header: 'PIC',
-    cell: (info) => (
-      <span className="text-gray-600 dark:text-gray-400">{info.getValue()}</span>
-    ),
-  }),
-  columnHelper.accessor('interestedService', {
-    header: 'Service',
-    cell: (info) => (
-      <span className="text-gray-600 dark:text-gray-400">{info.getValue()}</span>
-    ),
-  }),
-  columnHelper.accessor('pipelineStage', {
-    header: 'Stage',
-    cell: (info) => {
-      const stage = info.getValue();
-      const colors: Record<PipelineStage, string> = {
-        Prospect: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
-        Contacted: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
-        Responded: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
-        Qualified: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-        Meeting: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
-        Proposal: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-        Negotiation: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
-        Won: 'bg-accent-teal/20 text-accent-teal',
-        Lost: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-      };
-      return (
-        <span className={`badge ${colors[stage] || ''}`}>
-          {stage}
-        </span>
-      );
-    },
-  }),
-  columnHelper.accessor('estimatedValue', {
+  col.accessor('pic', { header: 'PIC' }),
+  col.accessor('estimatedValue', {
     header: 'Value',
-    cell: (info) => {
-      const value = info.getValue();
-      return (
-        <span className="font-medium text-gray-900 dark:text-white">
-          Rp {(value / 1000000).toFixed(0)}M
-        </span>
-      );
-    },
+    cell: (info) => <span className="font-semibold text-foreground">Rp {(info.getValue() / 1e6).toFixed(0)}jt</span>,
   }),
-  columnHelper.accessor('nextFollowUp', {
-    header: 'Follow-up',
-    cell: (info) => {
-      const date = new Date(info.getValue());
-      return (
-        <span className="text-gray-600 dark:text-gray-400">
-          {date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-        </span>
-      );
-    },
-  }),
-  columnHelper.accessor('priority', {
+  col.accessor('priority', {
     header: 'Priority',
-    cell: (info) => {
-      const priority = info.getValue();
-      const colors: Record<Priority, string> = {
-        Low: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400',
-        Medium: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-        High: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-      };
-      return (
-        <span className={`badge ${colors[priority] || ''}`}>
-          {priority}
-        </span>
-      );
-    },
+    cell: (info) => <span className={priorityColors[info.getValue()]}>{info.getValue()}</span>,
+  }),
+  col.accessor('pipelineStage', {
+    header: 'Stage',
+    cell: (info) => <span className={stageColors[info.getValue()]}>{info.getValue()}</span>,
   }),
 ];
 
 export function LeadsPage() {
-  const [search, setSearch] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-  const [filterStage, setFilterStage] = useState<PipelineStage | ''>('');
-  const [filterPIC, setFilterPIC] = useState('');
-  const [filterPriority, setFilterPriority] = useState<Priority | ''>('');
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [stageFilter, setStageFilter] = useState<string>('all');
+  const [picFilter, setPicFilter] = useState<string>('all');
+  const [showNewLead, setShowNewLead] = useState(false);
 
-  const filteredLeads = mockLeads.filter((lead) => {
-    const matchSearch = lead.businessName.toLowerCase().includes(search.toLowerCase()) ||
-      lead.contactPerson.toLowerCase().includes(search.toLowerCase());
-    const matchStage = !filterStage || lead.pipelineStage === filterStage;
-    const matchPIC = !filterPIC || lead.pic === filterPIC;
-    const matchPriority = !filterPriority || lead.priority === filterPriority;
-    return matchSearch && matchStage && matchPIC && matchPriority;
-  });
+  const filteredData = useMemo(() => {
+    let data = [...mockLeads];
+    if (stageFilter !== 'all') data = data.filter((l) => l.pipelineStage === stageFilter);
+    if (picFilter !== 'all') data = data.filter((l) => l.pic === picFilter);
+    return data;
+  }, [stageFilter, picFilter]);
 
   const table = useReactTable({
-    data: filteredLeads,
+    data: filteredData,
     columns,
+    state: { globalFilter },
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: { pageSize: 10 },
-    },
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 max-w-[1400px]">
+      {/* Header */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Leads</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{filteredLeads.length} leads total</p>
+          <h1 className="text-xl font-extrabold text-foreground">Leads</h1>
+          <p className="text-[13px] text-dark-400 mt-0.5">{filteredData.length} leads total</p>
         </div>
-        <Button className="bg-gradient-to-r from-accent-teal to-accent-green hover:from-accent-teal/90 hover:to-accent-green/90 text-white border-0">
-          <Plus className="w-4 h-4 mr-1.5" />
-          New Lead
+        <Button variant="primary" size="sm" onClick={() => setShowNewLead(true)}>
+          <Plus className="w-4 h-4 mr-1" /> New Lead
         </Button>
       </div>
 
-      {/* Search & Filters */}
-      <div className="card p-4">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search leads..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="input pl-10"
-            />
-          </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
-              showFilters 
-                ? 'bg-gray-900 dark:bg-accent-teal text-white border-gray-900 dark:border-accent-teal' 
-                : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-700'
-            }`}
-          >
-            <Filter className="w-4 h-4" />
-            Filters
-          </button>
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-[200px] max-w-xs">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-500 pointer-events-none" />
+          <input
+            type="search"
+            placeholder="Search leads..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="input !pl-10"
+          />
         </div>
-
-        {showFilters && (
-          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-dark-700">
-            <select
-              value={filterStage}
-              onChange={(e) => setFilterStage(e.target.value as PipelineStage | '')}
-              className="select"
-            >
-              <option value="">All Stages</option>
-              <option value="Prospect">Prospect</option>
-              <option value="Contacted">Contacted</option>
-              <option value="Responded">Responded</option>
-              <option value="Qualified">Qualified</option>
-              <option value="Meeting">Meeting</option>
-              <option value="Proposal">Proposal</option>
-              <option value="Negotiation">Negotiation</option>
-              <option value="Won">Won</option>
-              <option value="Lost">Lost</option>
-            </select>
-            <select
-              value={filterPIC}
-              onChange={(e) => setFilterPIC(e.target.value)}
-              className="select"
-            >
-              <option value="">All PIC</option>
-              <option value="Daniel">Daniel</option>
-              <option value="Ignas">Ignas</option>
-            </select>
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value as Priority | '')}
-              className="select"
-            >
-              <option value="">All Priority</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-            {(filterStage || filterPIC || filterPriority) && (
-              <button
-                onClick={() => {
-                  setFilterStage('');
-                  setFilterPIC('');
-                  setFilterPriority('');
-                }}
-                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              >
-                Clear filters
-              </button>
-            )}
-          </div>
-        )}
+        <select
+          value={stageFilter}
+          onChange={(e) => setStageFilter(e.target.value)}
+          className="select !w-auto !py-2"
+        >
+          <option value="all" className="bg-dark-800">All Stages</option>
+          {Object.keys(stageColors).map((s) => (
+            <option key={s} value={s} className="bg-dark-800">{s}</option>
+          ))}
+        </select>
+        <select
+          value={picFilter}
+          onChange={(e) => setPicFilter(e.target.value)}
+          className="select !w-auto !py-2"
+        >
+          <option value="all" className="bg-dark-800">All PIC</option>
+          <option value="Daniel" className="bg-dark-800">Daniel</option>
+          <option value="Ignas" className="bg-dark-800">Ignas</option>
+        </select>
       </div>
 
       {/* Table */}
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-dark-800 border-b border-gray-200 dark:border-dark-700">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
+          <table className="w-full min-w-[900px]">
+            <thead>
+              {table.getHeaderGroups().map((hg) => (
+                <tr key={hg.id} className="border-t border-white/[0.05]">
+                  {hg.headers.map((h) => (
                     <th
-                      key={header.id}
-                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                      key={h.id}
+                      className="table-header cursor-pointer select-none hover:text-dark-300 transition-colors"
+                      onClick={h.column.getToggleSortingHandler()}
                     >
-                      <button
-                        onClick={header.column.getToggleSortingHandler()}
-                        className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200"
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        <ArrowUpDown className="w-3 h-3" />
-                      </button>
+                      <span className="flex items-center gap-1">
+                        {flexRender(h.column.columnDef.header, h.getContext())}
+                        {{ asc: <ChevronUp className="w-3 h-3" />, desc: <ChevronDown className="w-3 h-3" /> }[h.column.getIsSorted() as string] ?? null}
+                      </span>
                     </th>
                   ))}
                 </tr>
               ))}
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
+            <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
+                <tr key={row.id} className="table-row">
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    <td key={cell.id} className="table-cell">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -378,28 +205,116 @@ export function LeadsPage() {
         </div>
 
         {/* Pagination */}
-        <div className="px-4 py-3 border-t border-gray-200 dark:border-dark-700 flex items-center justify-between bg-gray-50 dark:bg-dark-800">
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.04]">
+          <p className="text-[12px] text-dark-500">
             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-          </span>
-          <div className="flex items-center gap-2">
+          </p>
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="px-3 py-1.5 text-sm border border-gray-300 dark:border-dark-600 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 disabled:opacity-50 text-gray-700 dark:text-gray-300"
+              className="icon-btn !w-7 !h-7 disabled:opacity-30"
             >
-              Previous
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="px-3 py-1.5 text-sm border border-gray-300 dark:border-dark-600 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 disabled:opacity-50 text-gray-700 dark:text-gray-300"
+              className="icon-btn !w-7 !h-7 disabled:opacity-30"
             >
-              Next
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
+
+      {/* New Lead Modal */}
+      <Modal
+        isOpen={showNewLead}
+        onClose={() => setShowNewLead(false)}
+        title="New Lead"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setShowNewLead(false)}>Cancel</Button>
+            <Button size="sm">Save Lead</Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Business Name</label>
+              <input type="text" placeholder="PT Maju Jaya" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Contact Person</label>
+              <input type="text" placeholder="Budi Santoso" className="input" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">WhatsApp</label>
+              <input type="text" placeholder="628123456789" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Email</label>
+              <input type="email" placeholder="budi@majujaya.com" className="input" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Category</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select category</option>
+                {['Student Org', 'Community', 'Personal Brand', 'UMKM Small', 'UMKM Medium', 'UMKM Large', 'Startup', 'Company', 'Education', 'Other'].map((c) => (
+                  <option key={c} value={c} className="bg-dark-800">{c}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Lead Source</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select source</option>
+                {['Instagram', 'WhatsApp', 'Referral', 'Website', 'LinkedIn', 'Campus', 'Cold Outreach', 'Event', 'Other'].map((s) => (
+                  <option key={s} value={s} className="bg-dark-800">{s}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Interested Service</label>
+              <input type="text" placeholder="Website Development" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">PIC</label>
+              <select className="select" defaultValue="">
+                <option value="" disabled className="bg-dark-800">Select PIC</option>
+                <option value="Daniel" className="bg-dark-800">Daniel</option>
+                <option value="Ignas" className="bg-dark-800">Ignas</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Estimated Value (IDR)</label>
+              <input type="number" placeholder="50000000" className="input" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-foreground">Priority</label>
+              <select className="select" defaultValue="Medium">
+                <option value="Low" className="bg-dark-800">Low</option>
+                <option value="Medium" className="bg-dark-800">Medium</option>
+                <option value="High" className="bg-dark-800">High</option>
+              </select>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-bold text-foreground">Notes</label>
+            <textarea rows={3} placeholder="Additional notes..." className="input !rounded-xl" />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
