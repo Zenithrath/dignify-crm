@@ -32,13 +32,22 @@ function getWeekRange(weekStart: string): string {
   const start = new Date(weekStart + 'T00:00:00');
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Agt', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
   return `${start.getDate()}–${end.getDate()} ${monthNames[start.getMonth()]} ${start.getFullYear()}`;
 }
 
+function nextContentId(list: ContentItem[]): string {
+  const max = list.reduce((acc, w) => {
+    const match = /^CONTENT-\d{4}-(\d+)$/.exec(w.id);
+    return match ? Math.max(acc, Number(match[2])) : acc;
+  }, 0);
+  return `CONTENT-${new Date().getFullYear()}-${String(max + 1).padStart(4, '0')}`;
+}
+
 export function ContentSchedulePage() {
-  const { data: contentItems, loading: contentLoading, error: contentError } = useContentItems();
+  const { data: contentItems, loading: contentLoading, error: contentError, addContentItem } = useContentItems();
   const { data: rotation, loading: rotationLoading, error: rotationError } = useRotation();
+  const [mutated, setMutated] = useState<ContentItem[] | null>(null);
   const [showNewContent, setShowNewContent] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -53,11 +62,29 @@ export function ContentSchedulePage() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const items = mutated ?? contentItems ?? [];
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    // In a real app, this would be an API call with the new item data.
-    // Since we're using mock data, we can't actually persist, but we close the modal.
+    const newItem: Omit<ContentItem, 'id'> = {
+      title: formData.title,
+      platform: formData.platform,
+      designPic: formData.designPic,
+      editorPic: formData.editorPic,
+      copywriter: formData.copywriter,
+      status: formData.status,
+      publishDate: formData.publishDate,
+      isLive: formData.isLive,
+      notes: formData.notes,
+    };
+    addContentItem(newItem);
+    setMutated((prev) => {
+      const base = prev ?? contentItems ?? [];
+      const newId = nextContentId(base);
+      const fullItem: ContentItem = { ...newItem, id: newId };
+      return [fullItem, ...base];
+    });
     setShowNewContent(false);
     setFormData({
       title: '',
@@ -71,7 +98,6 @@ export function ContentSchedulePage() {
       notes: '',
     });
     setSubmitting(false);
-    // In production, this would call an API and then refetchContent().
   };
 
   if (contentLoading || rotationLoading) {
@@ -98,7 +124,6 @@ export function ContentSchedulePage() {
     );
   }
 
-  const items = contentItems ?? [];
   const grouped = STATUS_ORDER.reduce<Record<ContentStatus, ContentItem[]>>((acc, status) => {
     acc[status] = items.filter((item) => item.status === status);
     return acc;

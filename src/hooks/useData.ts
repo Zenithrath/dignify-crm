@@ -499,94 +499,104 @@ export function useContentItems() {
     error: null,
   });
 
+  const initialMockData: ContentItem[] = [
+    {
+      id: 'CONTENT-2026-0001',
+      title: 'Tips UMKM: Branding Murah yang Terasa Mahal',
+      platform: 'Instagram',
+      designPic: 'Daniel',
+      editorPic: 'Ignas',
+      copywriter: 'Ignas',
+      status: 'Published',
+      publishDate: '2026-08-25',
+      isLive: true,
+      notes: 'Carousel 5 slide, engagement bagus',
+    },
+    {
+      id: 'CONTENT-2026-0002',
+      title: 'Behind the Scenes Agency Agustus',
+      platform: 'TikTok',
+      designPic: 'Daniel',
+      editorPic: 'Ignas',
+      copywriter: 'Ignas',
+      status: 'Scheduled',
+      publishDate: '2026-08-28',
+      isLive: false,
+      notes: 'Format video pendek 45 detik',
+    },
+    {
+      id: 'CONTENT-2026-0003',
+      title: 'Testimoni Klien: Klinik Sehat Prima',
+      platform: 'Instagram',
+      designPic: 'Daniel',
+      editorPic: 'Ignas',
+      copywriter: 'Daniel',
+      status: 'Review',
+      publishDate: '2026-09-01',
+      isLive: false,
+      notes: 'Menunggu review copy final',
+    },
+    {
+      id: 'CONTENT-2026-0004',
+      title: 'Tutorial Editing CapCut untuk Pemula',
+      platform: 'YouTube',
+      designPic: 'Ignas',
+      editorPic: 'Ignas',
+      copywriter: 'Ignas',
+      status: 'Designing',
+      publishDate: '2026-09-05',
+      isLive: false,
+      notes: 'Thumbnail belum final',
+    },
+    {
+      id: 'CONTENT-2026-0005',
+      title: 'Pengumuman Layanan Baru: Company Profile Video',
+      platform: 'LinkedIn',
+      designPic: 'Daniel',
+      editorPic: 'Ignas',
+      copywriter: 'Daniel',
+      status: 'Draft',
+      publishDate: '2026-09-10',
+      isLive: false,
+      notes: 'Target audiens HRD dan founder',
+    },
+    {
+      id: 'CONTENT-2026-0006',
+      title: 'Reels Produk Unggulan UMKM Bakery Kita',
+      platform: 'Instagram',
+      designPic: 'Daniel',
+      editorPic: 'Ignas',
+      copywriter: 'Ignas',
+      status: 'Scheduled',
+      publishDate: '2026-08-27',
+      isLive: false,
+      notes: 'Jadwal prime time jam 19.00',
+    },
+  ];
+
   const fetchData = async () => {
     setState({ ...state, loading: true, error: null });
     try {
-      const mockData: ContentItem[] = [
-        {
-          id: 'CONTENT-2026-0001',
-          title: 'Tips UMKM: Branding Murah yang Terasa Mahal',
-          platform: 'Instagram',
-          designPic: 'Daniel',
-          editorPic: 'Ignas',
-          copywriter: 'Ignas',
-          status: 'Published',
-          publishDate: '2026-08-25',
-          isLive: true,
-          notes: 'Carousel 5 slide, engagement bagus',
-        },
-        {
-          id: 'CONTENT-2026-0002',
-          title: 'Behind the Scenes Agency Agustus',
-          platform: 'TikTok',
-          designPic: 'Daniel',
-          editorPic: 'Ignas',
-          copywriter: 'Ignas',
-          status: 'Scheduled',
-          publishDate: '2026-08-28',
-          isLive: false,
-          notes: 'Format video pendek 45 detik',
-        },
-        {
-          id: 'CONTENT-2026-0003',
-          title: 'Testimoni Klien: Klinik Sehat Prima',
-          platform: 'Instagram',
-          designPic: 'Daniel',
-          editorPic: 'Ignas',
-          copywriter: 'Daniel',
-          status: 'Review',
-          publishDate: '2026-09-01',
-          isLive: false,
-          notes: 'Menunggu review copy final',
-        },
-        {
-          id: 'CONTENT-2026-0004',
-          title: 'Tutorial Editing CapCut untuk Pemula',
-          platform: 'YouTube',
-          designPic: 'Ignas',
-          editorPic: 'Ignas',
-          copywriter: 'Ignas',
-          status: 'Designing',
-          publishDate: '2026-09-05',
-          isLive: false,
-          notes: 'Thumbnail belum final',
-        },
-        {
-          id: 'CONTENT-2026-0005',
-          title: 'Pengumuman Layanan Baru: Company Profile Video',
-          platform: 'LinkedIn',
-          designPic: 'Daniel',
-          editorPic: 'Ignas',
-          copywriter: 'Daniel',
-          status: 'Draft',
-          publishDate: '2026-09-10',
-          isLive: false,
-          notes: 'Target audiens HRD dan founder',
-        },
-        {
-          id: 'CONTENT-2026-0006',
-          title: 'Reels Produk Unggulan UMKM Bakery Kita',
-          platform: 'Instagram',
-          designPic: 'Daniel',
-          editorPic: 'Ignas',
-          copywriter: 'Ignas',
-          status: 'Scheduled',
-          publishDate: '2026-08-27',
-          isLive: false,
-          notes: 'Jadwal prime time jam 19.00',
-        },
-      ];
-      setState({ data: mockData, loading: false, error: null });
+      setState({ data: initialMockData, loading: false, error: null });
     } catch (e) {
       setState({ data: null, loading: false, error: (e as Error).message });
     }
+  };
+
+  const addContentItem = (item: Omit<ContentItem, 'id'>) => {
+    const newId = `CONTENT-${new Date().getFullYear()}-${String((state.data?.length ?? initialMockData.length) + 1).padStart(4, '0')}`;
+    const newItem: ContentItem = { ...item, id: newId };
+    setState((prev) => ({
+      ...prev,
+      data: prev.data ? [newItem, ...prev.data] : [newItem, ...initialMockData],
+    }));
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  return { ...state, refetch: fetchData };
+  return { ...state, refetch: fetchData, addContentItem };
 }
 
 export function useRotation() {
