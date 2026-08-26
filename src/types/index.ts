@@ -225,9 +225,9 @@ export type WorkType = 'Paid Outbound' | 'Paid Inbound' | 'Collab';
 export const WORK_TYPES: WorkType[] = ['Paid Outbound', 'Paid Inbound', 'Collab'];
 
 export const WORK_STAGES: Record<WorkType, string[]> = {
-  'Paid Outbound': ['Brief', 'Design', 'Revision', 'Approval', 'Delivery', 'Completed'],
-  'Paid Inbound': ['Brief', 'Design', 'Revision', 'Approval', 'Delivery', 'Completed'],
-  Collab: ['Discussion', 'Agreement', 'Production', 'Launch', 'Completed'],
+  'Paid Outbound': ['Analisis', 'Riset Bisnis', 'Approval Team', 'Development', 'Penawaran', 'Deal'],
+  'Paid Inbound': ['Request', 'Brief', 'Development', 'Deploy'],
+  Collab: ['Cari Potensi', 'Ajakan Kerja Sama', 'Brief & Meeting', 'Agreement', 'Production'],
 };
 
 export interface Work {
