@@ -101,7 +101,7 @@ export function Layout({ children }: LayoutProps) {
       <button
         type="button"
         aria-label="Logout"
-        className={`flex items-center transition-colors text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-red-400 ${
+        className={`gs-sidebar-item flex items-center transition-colors text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-red-400 ${
           expanded
             ? 'w-full justify-start gap-3 px-3 h-10 rounded-lg'
             : 'w-10 h-10 justify-center rounded-full'
@@ -179,6 +179,7 @@ export function Layout({ children }: LayoutProps) {
               type="button"
               onClick={() => setCollapsed((c) => !c)}
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-expanded={!collapsed}
               className={`flex items-center mt-2 transition-colors text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-white ${
                 expanded
                   ? 'w-full justify-start gap-3 px-3 h-10 rounded-lg'
