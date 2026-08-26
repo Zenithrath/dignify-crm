@@ -109,28 +109,28 @@ export function ClientDetailPage() {
         <div className="lg:col-span-2 space-y-5">
           {/* Pastel stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="pastel-mint !p-5">
+            <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[22px] p-5">
               <div className="flex items-start justify-between">
-                <p className="text-xs font-bold text-teal-400/60">Total Value</p>
-                <DollarSign className="w-4 h-4 text-teal-400/40" />
+                <p className="text-[11px] font-medium text-white/70">Total Value</p>
+                <DollarSign className="w-4 h-4 text-[#D8FF3F]/60" />
               </div>
-              <p className="text-2xl font-extrabold text-foreground mt-4">
+              <p className="text-2xl font-extrabold text-white tracking-tight mt-4">
                 Rp {(mockClient.totalProjectValue / 1000000).toFixed(0)}M
               </p>
             </div>
-            <div className="pastel-sky !p-5">
+            <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[22px] p-5">
               <div className="flex items-start justify-between">
-                <p className="text-xs font-bold text-sky-400/60">Projects</p>
-                <FolderKanban className="w-4 h-4 text-sky-400/40" />
+                <p className="text-[11px] font-medium text-white/70">Projects</p>
+                <FolderKanban className="w-4 h-4 text-[#4CD7E0]/60" />
               </div>
-              <p className="text-2xl font-extrabold text-foreground mt-4">{mockProjects.length}</p>
+              <p className="text-2xl font-extrabold text-white tracking-tight mt-4">{mockProjects.length}</p>
             </div>
-            <div className="pastel-coral !p-5">
+            <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[22px] p-5">
               <div className="flex items-start justify-between">
-                <p className="text-xs font-bold text-red-400/60">Outstanding</p>
-                <Wallet className="w-4 h-4 text-red-400/40" />
+                <p className="text-[11px] font-medium text-white/70">Outstanding</p>
+                <Wallet className="w-4 h-4 text-[#FF5A5A]/60" />
               </div>
-              <p className="text-2xl font-extrabold text-foreground mt-4">Rp {(outstanding / 1000000).toFixed(0)}M</p>
+              <p className="text-2xl font-extrabold text-white tracking-tight mt-4">Rp {(outstanding / 1000000).toFixed(0)}M</p>
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export function ClientDetailPage() {
                 <Link
                   key={project.id}
                   to={`/projects/${project.id}`}
-                  className="block p-4 rounded-2xl bg-dark-900 border border-border hover:bg-dark-750 hover:border-border transition-colors cursor-pointer group"
+                  className="block p-4 rounded-[18px] bg-[#1C1E26]/50 border border-white/[0.05] hover:bg-white/[0.04] transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
                     <h3 className="font-bold text-foreground">{project.projectName}</h3>
@@ -170,9 +170,9 @@ export function ClientDetailPage() {
                       <span className="text-[11px] font-bold text-dark-400">Progress</span>
                       <span className="text-[11px] font-extrabold text-foreground">{project.progress}%</span>
                     </div>
-                    <div className="w-full bg-dark-700 rounded-full h-1.5">
+                    <div className="w-full bg-white/[0.06] rounded-full h-1.5">
                       <div
-                        className="bg-gradient-to-r from-teal-500 to-emerald-500 h-1.5 rounded-full"
+                        className="bg-[#D8FF3F] h-1.5 rounded-full"
                         style={{ width: `${project.progress}%` }}
                       />
                     </div>
@@ -232,10 +232,10 @@ export function ClientDetailPage() {
                 href={`https://wa.me/${mockClient.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/15 hover:bg-teal-500/15 transition-colors cursor-pointer group"
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-[#1C1E26]/50 border border-white/[0.05] hover:bg-white/[0.04] transition-colors cursor-pointer group"
               >
-                <span className="w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-4 h-4 text-foreground" />
+                <span className="w-9 h-9 rounded-full bg-[#D8FF3F] flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-black" />
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground">WhatsApp</p>
@@ -245,10 +245,10 @@ export function ClientDetailPage() {
               </a>
               <a
                 href={`mailto:${mockClient.email}`}
-                className="flex items-center gap-3 p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/15 hover:bg-sky-500/15 transition-colors cursor-pointer group"
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-[#1C1E26]/50 border border-white/[0.05] hover:bg-white/[0.04] transition-colors cursor-pointer group"
               >
-                <span className="w-9 h-9 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-4 h-4 text-foreground" />
+                <span className="w-9 h-9 rounded-full bg-[#4CD7E0] flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-black" />
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground">Email</p>

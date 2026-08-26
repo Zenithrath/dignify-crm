@@ -62,7 +62,7 @@ export function ClientsPage() {
           <Link key={client.id} to={`/clients/${client.id}`} className="card-hover group p-5">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-400 font-extrabold flex items-center justify-center">
+                <div className="w-11 h-11 rounded-full bg-[#A89AE8]/20 border border-[#A89AE8]/30 text-[#A89AE8] font-extrabold flex items-center justify-center">
                   {client.businessName.charAt(0)}
                 </div>
                 <div>
@@ -70,15 +70,15 @@ export function ClientsPage() {
                   <p className="text-xs font-medium text-dark-400">{client.contactPerson}</p>
                 </div>
               </div>
-              <ArrowUpRight className="w-4 h-4 text-dark-500 group-hover:text-teal-400 transition-colors" />
+              <ArrowUpRight className="w-4 h-4 text-white/40 group-hover:text-[#D8FF3F] transition-colors" />
             </div>
             <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2.5 text-sm text-dark-200">
-                <Phone className="w-4 h-4 text-teal-400" />
+              <div className="flex items-center gap-2.5 text-sm text-white/70">
+                <Phone className="w-4 h-4 text-[#D8FF3F]" />
                 {client.whatsapp}
               </div>
-              <div className="flex items-center gap-2.5 text-sm text-dark-200">
-                <Mail className="w-4 h-4 text-sky-400" />
+              <div className="flex items-center gap-2.5 text-sm text-white/70">
+                <Mail className="w-4 h-4 text-[#4CD7E0]" />
                 {client.email}
               </div>
             </div>

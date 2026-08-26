@@ -37,8 +37,8 @@ export function TeamPage() {
               <tr key={m.id} className="table-row">
                 <td className="table-cell">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center flex-shrink-0">
-                      <span className="text-[11px] font-bold text-orange-400">{m.name.charAt(0)}</span>
+                    <div className="w-8 h-8 rounded-lg bg-[#FF5A5A]/10 border border-[#FF5A5A]/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[11px] font-bold text-[#FF5A5A]">{m.name.charAt(0)}</span>
                     </div>
                     <div>
                       <p className="font-semibold text-foreground text-[13px]">{m.name}</p>

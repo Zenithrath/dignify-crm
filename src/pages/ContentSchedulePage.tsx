@@ -88,7 +88,7 @@ export function ContentSchedulePage() {
     setShowNewContent(false);
     setFormData({
       title: '',
-      platform: '',
+      platform: '' as ContentItem['platform'],
       designPic: '',
       editorPic: '',
       copywriter: 'Ignas',

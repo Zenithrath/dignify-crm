@@ -73,7 +73,7 @@ const columns = [
   col.accessor('businessName', {
     header: 'Business',
     cell: (info) => (
-      <Link to={`/leads/${info.row.original.id}`} className="font-semibold text-foreground hover:text-orange-400 transition-colors">
+      <Link to={`/leads/${info.row.original.id}`} className="font-semibold text-white hover:text-[#D8FF3F] transition-colors">
         {info.getValue()}
       </Link>
     ),
@@ -87,7 +87,7 @@ const columns = [
   col.accessor('pic', { header: 'PIC' }),
   col.accessor('estimatedValue', {
     header: 'Value',
-    cell: (info) => <span className="font-semibold text-foreground">Rp {(info.getValue() / 1e6).toFixed(0)}jt</span>,
+    cell: (info) => <span className="font-semibold text-white">Rp {(info.getValue() / 1e6).toFixed(0)}jt</span>,
   }),
   col.accessor('priority', {
     header: 'Priority',

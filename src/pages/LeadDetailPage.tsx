@@ -114,21 +114,33 @@ export function LeadDetailPage() {
         <div className="lg:col-span-2 space-y-5">
           {/* Pastel summary */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="pastel-lime !p-4">
-              <p className="text-[11px] font-bold text-emerald-400/60">Estimated Value</p>
-              <p className="text-xl font-extrabold text-foreground mt-1">Rp {(mockLead.estimatedValue / 1000000).toFixed(0)}M</p>
+            <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[22px] p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2.5 h-2.5 rounded-full border-[1.5px] border-[#D8FF3F]" />
+                <p className="text-[11px] font-medium text-white/70">Estimated Value</p>
+              </div>
+              <p className="text-xl font-extrabold text-white tracking-tight">Rp {(mockLead.estimatedValue / 1000000).toFixed(0)}M</p>
             </div>
-            <div className="pastel-mint !p-4">
-              <p className="text-[11px] font-bold text-teal-400/60">PIC</p>
-              <p className="text-xl font-extrabold text-foreground mt-1">{mockLead.pic}</p>
+            <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[22px] p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2.5 h-2.5 rounded-full border-[1.5px] border-[#4CD7E0]" />
+                <p className="text-[11px] font-medium text-white/70">PIC</p>
+              </div>
+              <p className="text-xl font-extrabold text-white tracking-tight">{mockLead.pic}</p>
             </div>
-            <div className="pastel-coral !p-4">
-              <p className="text-[11px] font-bold text-red-400/60">Source</p>
-              <p className="text-xl font-extrabold text-foreground mt-1">{mockLead.leadSource}</p>
+            <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[22px] p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2.5 h-2.5 rounded-full border-[1.5px] border-[#FF5A5A]" />
+                <p className="text-[11px] font-medium text-white/70">Source</p>
+              </div>
+              <p className="text-xl font-extrabold text-white tracking-tight">{mockLead.leadSource}</p>
             </div>
-            <div className="pastel-lav !p-4">
-              <p className="text-[11px] font-bold text-purple-400/60">Category</p>
-              <p className="text-xl font-extrabold text-foreground mt-1">{mockLead.category}</p>
+            <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[22px] p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2.5 h-2.5 rounded-full border-[1.5px] border-[#A89AE8]" />
+                <p className="text-[11px] font-medium text-white/70">Category</p>
+              </div>
+              <p className="text-xl font-extrabold text-white tracking-tight">{mockLead.category}</p>
             </div>
           </div>
 
@@ -138,7 +150,7 @@ export function LeadDetailPage() {
               <Clock className="w-5 h-5 text-emerald-400" />
               <h2 className="text-lg font-extrabold text-foreground">Next Action</h2>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/15">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-[20px] bg-[#1C1E26]/50 border border-white/[0.05]">
               <div>
                 <p className="font-bold text-foreground">{mockLead.nextAction}</p>
                 <p className="text-xs font-semibold text-dark-300 mt-0.5">
@@ -163,7 +175,7 @@ export function LeadDetailPage() {
               <h2 className="text-lg font-extrabold text-foreground">Activity Timeline</h2>
               <button
                 onClick={() => setShowAddActivity(!showAddActivity)}
-                className="text-sm font-bold text-teal-400 hover:underline cursor-pointer inline-flex items-center gap-1"
+                className="text-sm font-bold text-[#D8FF3F] hover:underline cursor-pointer inline-flex items-center gap-1"
               >
                 <Plus className="w-4 h-4" />
                 Add Activity
@@ -171,7 +183,7 @@ export function LeadDetailPage() {
             </div>
 
             {showAddActivity && (
-              <div className="mb-5 p-4 rounded-2xl bg-dark-900 border border-border">
+              <div className="mb-5 p-4 rounded-[18px] bg-[#1C1E26]/50 border border-white/[0.05]">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                   <select className="select" defaultValue="WhatsApp">
                     {['WhatsApp', 'Email', 'Phone Call', 'Meeting', 'Internal Note'].map((t) => (
@@ -183,7 +195,7 @@ export function LeadDetailPage() {
                 <div className="flex justify-end gap-2">
                   <button
                     onClick={() => setShowAddActivity(false)}
-                    className="px-4 py-2 text-sm font-bold text-dark-300 hover:bg-foreground/[0.05] rounded-lg cursor-pointer"
+                    className="px-4 py-2 text-sm font-bold text-white/60 hover:bg-white/[0.05] rounded-lg cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -196,13 +208,13 @@ export function LeadDetailPage() {
               {mockActivities.map((activity, idx) => (
                 <div key={activity.id} className="flex gap-4">
                   <div className="relative flex flex-col items-center">
-                    <div className="w-9 h-9 rounded-full bg-teal-500/15 border border-teal-500/20 flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-extrabold text-teal-400">
+                    <div className="w-9 h-9 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-extrabold text-white/80">
                         {activity.createdBy.charAt(0)}
                       </span>
                     </div>
                     {idx < mockActivities.length - 1 && (
-                      <div className="w-0.5 flex-1 bg-foreground/[0.04] my-1" />
+                      <div className="w-0.5 flex-1 bg-white/[0.06] my-1" />
                     )}
                   </div>
                   <div className="flex-1 pb-5">
@@ -235,10 +247,10 @@ export function LeadDetailPage() {
                 href={`https://wa.me/${mockLead.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/15 hover:bg-teal-500/15 transition-colors cursor-pointer group"
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-[#1C1E26]/50 border border-white/[0.05] hover:bg-white/[0.04] transition-colors cursor-pointer group"
               >
-                <span className="w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-4 h-4 text-foreground" />
+                <span className="w-9 h-9 rounded-full bg-[#D8FF3F] flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-black" />
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground">WhatsApp</p>
@@ -248,10 +260,10 @@ export function LeadDetailPage() {
               </a>
               <a
                 href={`mailto:${mockLead.email}`}
-                className="flex items-center gap-3 p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/15 hover:bg-sky-500/15 transition-colors cursor-pointer group"
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-[#1C1E26]/50 border border-white/[0.05] hover:bg-white/[0.04] transition-colors cursor-pointer group"
               >
-                <span className="w-9 h-9 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-4 h-4 text-foreground" />
+                <span className="w-9 h-9 rounded-full bg-[#4CD7E0] flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-black" />
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground">Email</p>
@@ -263,10 +275,10 @@ export function LeadDetailPage() {
                 href={`https://${mockLead.instagramWebsite}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/15 hover:bg-purple-500/15 transition-colors cursor-pointer group"
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-[#1C1E26]/50 border border-white/[0.05] hover:bg-white/[0.04] transition-colors cursor-pointer group"
               >
-                <span className="w-9 h-9 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0">
-                  <Globe className="w-4 h-4 text-foreground" />
+                <span className="w-9 h-9 rounded-full bg-[#A89AE8] flex items-center justify-center flex-shrink-0">
+                  <Globe className="w-4 h-4 text-black" />
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground">Website</p>

@@ -1,340 +1,379 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, KanbanSquare, Briefcase,
-  CheckSquare, CreditCard, Settings,
-  Search, ChevronRight, Menu as MenuIcon, X,
-  House, LogOut, Layers, Calendar, CalendarDays,
-  PanelLeftClose, PanelLeftOpen,
+  LayoutGrid,
+  House,
+  Clock,
+  Briefcase,
+  Calendar,
+  CheckSquare,
+  FileText,
+  Bookmark,
+  Bell,
+  Menu as MenuIcon,
+  X,
+  CreditCard,
+  Settings,
+  Users,
 } from 'lucide-react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const navSections = [
-  {
-    items: [
-      { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-      { path: '/leads', label: 'Leads', icon: Users },
-      { path: '/work', label: 'Work', icon: KanbanSquare },
-      { path: '/clients', label: 'Clients', icon: Briefcase },
-      { path: '/tasks', label: 'Tasks', icon: CheckSquare },
-      { path: '/content', label: 'Content', icon: Calendar },
-      { path: '/calendar', label: 'Calendar', icon: CalendarDays },
-    ],
-  },
-  {
-    items: [
-      { path: '/payments', label: 'Payments', icon: CreditCard },
-      { path: '/services', label: 'Services', icon: Layers },
-      { path: '/team', label: 'Team', icon: Users },
-    ],
-  },
+const navItems = [
+  { path: '/', label: 'Overview', icon: House },
+  { path: '/leads', label: 'Leads & Timeline', icon: Clock },
+  { path: '/work', label: 'Work & Projects', icon: Briefcase },
+  { path: '/calendar', label: 'Calendar', icon: Calendar },
+  { path: '/tasks', label: 'Tasks', icon: CheckSquare },
+  { path: '/content', label: 'Content Schedule', icon: FileText },
+  { path: '/services', label: 'Services', icon: Bookmark },
+  { path: '/payments', label: 'Payments', icon: CreditCard },
+  { path: '/team', label: 'Team', icon: Users },
+  { path: '/settings', label: 'Settings', icon: Settings },
 ];
-
-const pageTitles: Record<string, string> = {
-  '/': 'Overviews',
-  '/leads': 'Leads',
-  '/work': 'Work',
-  '/clients': 'Clients',
-  '/tasks': 'Tasks',
-  '/content': 'Content Schedule',
-  '/calendar': 'Calendar',
-  '/payments': 'Payments',
-  '/services': 'Services',
-  '/team': 'Team',
-  '/settings': 'Settings',
-};
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(
-    () => localStorage.getItem('dignify-sidebar-collapsed') !== '0'
-  );
 
-  useEffect(() => {
-    localStorage.setItem('dignify-sidebar-collapsed', collapsed ? '1' : '0');
-  }, [collapsed]);
-
-  useGSAP(() => {
-    gsap.from('.gs-sidebar-item', {
-      opacity: 0,
-      x: -14,
-      duration: 0.4,
-      stagger: 0.03,
-      ease: 'power2.out',
-    });
-  });
-
-  const currentTitle = pageTitles[location.pathname] ?? location.pathname.split('/')[1] ?? 'Overviews';
-
-  const renderSidebar = (expanded: boolean, showToggle: boolean) => {
-    const rowClass = (active: boolean) =>
-      `gs-sidebar-item flex items-center transition-colors ${
-        expanded
-          ? 'w-full justify-start gap-3 px-3 h-10 rounded-lg'
-          : 'w-10 h-10 justify-center rounded-full'
-      } ${
-        active
-          ? 'bg-primary text-primary-foreground'
-          : 'text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-white'
-      }`;
-
-    const settingsLink = (
-      <Link
-        to="/settings"
-        onClick={() => setMobileOpen(false)}
-        aria-label="Settings"
-        className={rowClass(location.pathname.startsWith('/settings'))}
-      >
-        <Settings className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.8} />
-        {expanded && <span className="text-sm font-medium whitespace-nowrap">Settings</span>}
-      </Link>
-    );
-
-    const logoutButton = (
-      <button
-        type="button"
-        aria-label="Logout"
-        className={`gs-sidebar-item flex items-center transition-colors text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-red-400 ${
-          expanded
-            ? 'w-full justify-start gap-3 px-3 h-10 rounded-lg'
-            : 'w-10 h-10 justify-center rounded-full'
-        }`}
-      >
-        <LogOut className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.8} />
-        {expanded && <span className="text-sm font-medium whitespace-nowrap">Logout</span>}
-      </button>
-    );
-
-    return (
-      <TooltipProvider delay={200}>
-        <div className={`flex flex-col h-full w-full py-4 gap-1 ${expanded ? 'px-3' : 'items-center'}`}>
-          {/* Logo */}
-          <Link
-            to="/"
-            onClick={() => setMobileOpen(false)}
-            className={`mb-4 flex items-center gap-3 flex-shrink-0 ${expanded ? 'px-3' : 'justify-center'}`}
-            aria-label="Dignify CRM home"
-          >
-            <img src="/logo.png" alt="Dignify" className="w-9 h-9 object-contain rounded-xl" />
-            {expanded && <span className="text-base font-bold tracking-tight">Dignify</span>}
-          </Link>
-
-          {/* Navigation */}
-          <nav
-            className={`flex-1 flex flex-col gap-1.5 ${expanded ? 'w-full' : 'items-center'}`}
-            aria-label="Main navigation"
-          >
-            {navSections.map((section, idx) => (
-              <div key={idx} className={`flex flex-col gap-1.5 ${expanded ? 'w-full' : 'items-center'}`}>
-                {idx > 0 && (
-                  <div
-                    className={`${expanded ? 'w-full my-2' : 'w-6'} h-px bg-white/10`}
-                    aria-hidden="true"
-                  />
-                )}
-                {section.items.map((item) => {
-                  const isActive =
-                    item.path === '/'
-                      ? location.pathname === '/'
-                      : location.pathname.startsWith(item.path);
-                  const Icon = item.icon;
-                  const link = (
-                    <Link
-                      to={item.path}
-                      onClick={() => setMobileOpen(false)}
-                      aria-current={isActive ? 'page' : undefined}
-                      aria-label={item.label}
-                      className={rowClass(isActive)}
-                    >
-                      <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.8} />
-                      {expanded && (
-                        <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>
-                      )}
-                    </Link>
-                  );
-                  if (expanded) {
-                    return <Fragment key={item.path}>{link}</Fragment>;
-                  }
-                  return (
-                    <Tooltip key={item.path}>
-                      <TooltipTrigger render={link} />
-                      <TooltipContent side="right">{item.label}</TooltipContent>
-                    </Tooltip>
-                  );
-                })}
-              </div>
-            ))}
-          </nav>
-
-          {/* Collapse toggle */}
-          {showToggle && (
-            <button
-              type="button"
-              onClick={() => setCollapsed((c) => !c)}
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              aria-expanded={!collapsed}
-              className={`flex items-center mt-2 transition-colors text-[oklch(0.985_0_0)] hover:bg-white/10 hover:text-white ${
-                expanded
-                  ? 'w-full justify-start gap-3 px-3 h-10 rounded-lg'
-                  : 'w-10 h-10 justify-center rounded-full'
-              }`}
-            >
-              {collapsed ? (
-                <PanelLeftOpen className="w-[18px] h-[18px]" strokeWidth={1.8} />
-              ) : (
-                <PanelLeftClose className="w-[18px] h-[18px]" strokeWidth={1.8} />
-              )}
-              {expanded && <span className="text-sm font-medium whitespace-nowrap">Collapse</span>}
-            </button>
-          )}
-
-          {/* Bottom: settings + logout + profile */}
-          <div
-            className={`flex flex-col gap-1.5 mt-4 pt-4 border-t border-white/10 ${
-              expanded ? 'w-full' : 'items-center'
-            }`}
-          >
-            {expanded ? (
-              settingsLink
-            ) : (
-              <Tooltip>
-                <TooltipTrigger render={settingsLink} />
-                <TooltipContent side="right">Settings</TooltipContent>
-              </Tooltip>
-            )}
-            {expanded ? (
-              logoutButton
-            ) : (
-              <Tooltip>
-                <TooltipTrigger render={logoutButton} />
-                <TooltipContent side="right">Logout</TooltipContent>
-              </Tooltip>
-            )}
-            {expanded ? (
-              <button
-                type="button"
-                aria-label="Profile"
-                className="mt-1 w-full flex items-center gap-3 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors"
-              >
-                <img
-                  src="/logo.png"
-                  alt=""
-                  className="w-9 h-9 rounded-full object-cover border border-white/10 bg-muted flex-shrink-0"
-                />
-                <span className="text-left leading-tight">
-                  <span className="block text-sm font-bold">Daniel</span>
-                  <span className="block text-[11px] opacity-60">@dignify</span>
-                </span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                aria-label="Profile"
-                className="mt-1 w-9 h-9 rounded-full overflow-hidden border border-white/10 bg-muted flex items-center justify-center flex-shrink-0"
-              >
-                <img src="/logo.png" alt="Daniel" className="w-full h-full object-cover" />
-              </button>
-            )}
-          </div>
-        </div>
-      </TooltipProvider>
-    );
+  const isNavActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
   };
 
   return (
-    <div className="flex h-screen bg-dark-950 overflow-hidden">
-      {/* Mobile overlay */}
-      {mobileOpen && (
+    <TooltipProvider delay={150}>
+      <div className="flex h-screen bg-[#0E0F13] text-[#F4F6FA] overflow-hidden select-none font-sans relative">
+        {/* Subtle Ambient Glowing Mesh Backgrounds */}
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setMobileOpen(false)}
+          className="pointer-events-none absolute -top-40 left-20 w-[500px] h-[500px] rounded-full bg-[#D8FF3F]/[0.025] blur-[120px]"
+          aria-hidden="true"
         />
-      )}
+        <div
+          className="pointer-events-none absolute top-1/3 right-10 w-[600px] h-[600px] rounded-full bg-[#A89AE8]/[0.035] blur-[140px]"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute -bottom-40 left-1/3 w-[500px] h-[500px] rounded-full bg-[#FF5A5A]/[0.02] blur-[130px]"
+          aria-hidden="true"
+        />
 
-      {/* Sidebar — desktop */}
-      <aside
-        className={`hidden lg:flex flex-shrink-0 border-r border-white/10 bg-[oklch(0.145_0_0)] text-[oklch(0.985_0_0)] overflow-hidden transition-[width] duration-200 ${
-          collapsed ? 'w-[72px]' : 'w-[240px]'
-        }`}
-      >
-        {renderSidebar(!collapsed, true)}
-      </aside>
-
-      {/* Sidebar — mobile drawer */}
-      {mobileOpen && (
-        <aside className="fixed lg:hidden inset-y-0 left-0 z-50 w-[240px] bg-[oklch(0.145_0_0)] text-[oklch(0.985_0_0)] border-r border-white/10 shadow-dark-lift flex">
-          <button
+        {/* Mobile menu overlay */}
+        {mobileOpen && (
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-40 lg:hidden"
             onClick={() => setMobileOpen(false)}
-            className="absolute top-3 right-1.5 icon-btn !w-6 !h-6 border-white/10 text-[oklch(0.985_0_0)]"
-            aria-label="Close menu"
-          >
-            <X className="w-3 h-3" />
-          </button>
-          {renderSidebar(true, false)}
-        </aside>
-      )}
+          />
+        )}
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Topbar */}
-        <header className="flex items-center gap-4 h-14 px-4 lg:px-5 flex-shrink-0 border-b border-border">
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="lg:hidden icon-btn"
-            aria-label="Open menu"
-          >
-            <MenuIcon className="w-4 h-4" />
-          </button>
+        {/* Mobile Drawer */}
+        {mobileOpen && (
+          <aside className="fixed lg:hidden inset-y-0 left-0 z-50 w-[260px] bg-[#121318] border-r border-white/10 p-5 flex flex-col justify-between shadow-2xl">
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#D8FF3F] flex items-center justify-center text-black font-black text-xl shadow-[0_0_20px_rgba(216,255,63,0.4)]">
+                    ✻
+                  </div>
+                  <div>
+                    <h2 className="font-extrabold text-lg tracking-tight text-white">Dignify CRM</h2>
+                    <p className="text-[11px] text-white/50">Next-gen Workflow</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="icon-btn !w-8 !h-8 text-white/70 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
-          {/* Breadcrumb */}
-          <nav className="hidden sm:flex items-center gap-1.5 text-[13px]" aria-label="Breadcrumb">
+              <nav className="flex flex-col gap-2">
+                {navItems.map((item) => {
+                  const active = isNavActive(item.path);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        active
+                          ? 'bg-[#D8FF3F] text-black font-bold shadow-[0_0_15px_rgba(216,255,63,0.3)]'
+                          : 'text-white/70 hover:bg-white/5 hover:text-white'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div className="pt-4 border-t border-white/10 flex items-center gap-3">
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
+                alt="User"
+                className="w-10 h-10 rounded-full object-cover border border-white/20"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-white truncate">Jessie Caballero</p>
+                <p className="text-xs text-white/50 truncate">jessie@microsoft.com</p>
+              </div>
+            </div>
+          </aside>
+        )}
+
+        {/* Desktop Mini Icon Sidebar Rail */}
+        <aside className="hidden lg:flex flex-col items-center justify-between w-[70px] flex-shrink-0 h-full py-5 bg-[#121318]/90 border-r border-white/[0.07] backdrop-blur-xl z-20">
+          {/* Top: Starburst/Asterisk Logo */}
+          <div className="flex flex-col items-center gap-6">
             <Link
               to="/"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="w-10 h-10 rounded-2xl bg-transparent hover:bg-white/5 transition-all flex items-center justify-center group"
               aria-label="Home"
             >
-              <House className="w-4 h-4" strokeWidth={1.8} />
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[#D8FF3F] hover:scale-110 transition-transform">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-7 h-7 fill-[#D8FF3F] stroke-[#D8FF3F]"
+                  strokeWidth="1.5"
+                >
+                  {/* 8-pointed star flower */}
+                  <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14" strokeWidth="3" strokeLinecap="round"/>
+                </svg>
+              </div>
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60" />
-            <span className="font-semibold text-foreground">{currentTitle}</span>
-          </nav>
 
-          {/* Search */}
-          <div className="relative flex-1 max-w-md mx-auto">
-            <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-500 pointer-events-none"
-              strokeWidth={1.8}
-            />
-            <input
-              type="search"
-              placeholder="Search..."
-              aria-label="Search"
-              className="input !pl-10"
+            {/* Navigation icon buttons */}
+            <nav className="flex flex-col items-center gap-3">
+              {/* App Overview / Grid */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        location.pathname === '/app-grid'
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)]'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <LayoutGrid className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Apps</TooltipContent>
+              </Tooltip>
+
+              {/* Main Home / CRM Dashboard */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        location.pathname === '/'
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <House className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Dashboard</TooltipContent>
+              </Tooltip>
+
+              {/* Leads / History */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/leads"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        isNavActive('/leads')
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <Clock className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Leads & History</TooltipContent>
+              </Tooltip>
+
+              {/* Work / Deals */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/work"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        isNavActive('/work')
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)]'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <Briefcase className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Work & Pipeline</TooltipContent>
+              </Tooltip>
+
+              {/* Calendar */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/calendar"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        isNavActive('/calendar')
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)]'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <Calendar className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Calendar</TooltipContent>
+              </Tooltip>
+
+              {/* Tasks */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/tasks"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        isNavActive('/tasks')
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)]'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <CheckSquare className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Tasks</TooltipContent>
+              </Tooltip>
+
+              {/* Content / Documents */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/content"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        isNavActive('/content')
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)]'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <FileText className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Content & Documents</TooltipContent>
+              </Tooltip>
+
+              {/* Services / Saved */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Link
+                      to="/services"
+                      className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        isNavActive('/services')
+                          ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)]'
+                          : 'text-white/40 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      <Bookmark className="w-[19px] h-[19px]" strokeWidth={1.8} />
+                    </Link>
+                  }
+                />
+                <TooltipContent side="right">Services & Bookmarks</TooltipContent>
+              </Tooltip>
+            </nav>
+          </div>
+
+          {/* Bottom Icons: Notification bell + User avatar */}
+          <div className="flex flex-col items-center gap-3">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.06] transition-all relative"
+                    aria-label="Notifications"
+                  >
+                    <Bell className="w-[18px] h-[18px]" strokeWidth={1.8} />
+                    <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#FF5A5A] ring-2 ring-[#121318]" />
+                  </button>
+                }
+              />
+              <TooltipContent side="right">Notifications</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Link
+                    to="/settings"
+                    className="w-10 h-10 rounded-full overflow-hidden border border-white/20 hover:border-[#D8FF3F] transition-all p-0.5"
+                    aria-label="Profile Settings"
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
+                      alt="User avatar"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </Link>
+                }
+              />
+              <TooltipContent side="right">Profile Settings</TooltipContent>
+            </Tooltip>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+          {/* Mobile Top Header */}
+          <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#121318] border-b border-white/10 flex-shrink-0 z-10">
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="icon-btn text-white"
+              aria-label="Open menu"
+            >
+              <MenuIcon className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-lg bg-[#D8FF3F] text-black font-black text-xs flex items-center justify-center">
+                ✻
+              </div>
+              <span className="font-bold text-sm tracking-tight">Dignify CRM</span>
+            </div>
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
+              alt="Profile"
+              className="w-7 h-7 rounded-full object-cover border border-white/20"
             />
           </div>
 
-          {/* User */}
-          <div className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg border border-border overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
-              <img src="/logo.png" alt="User" className="w-full h-full object-cover" />
-            </div>
-            <div className="hidden md:block leading-tight">
-              <p className="text-[13px] font-bold text-foreground">Daniel</p>
-              <p className="text-[11px] text-muted-foreground">@dignify</p>
-            </div>
-          </div>
-        </header>
-
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto px-4 lg:px-5 pb-6">{children}</main>
+          {/* Children Page View */}
+          <main className="flex-1 min-w-0 h-full overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-5">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
