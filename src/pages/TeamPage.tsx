@@ -24,7 +24,7 @@ export function TeamPage() {
       <div className="card overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-t border-white/[0.05]">
+            <tr className="border-t border-border">
               <th className="table-header">Member</th>
               <th className="table-header">Email</th>
               <th className="table-header">Role</th>

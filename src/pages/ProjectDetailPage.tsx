@@ -193,7 +193,7 @@ export function ProjectDetailPage() {
                 return (
                   <div
                     key={task.id}
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-dark-900 border border-white/[0.04]"
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-dark-900 border border-border"
                   >
                     {done ? (
                       <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />

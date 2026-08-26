@@ -50,7 +50,7 @@ export function ProjectsPage() {
               <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{p.deadline}</span>
               <span className="flex items-center gap-1 font-semibold text-foreground"><DollarSign className="w-3 h-3 text-orange-400" />Rp {(p.projectValue / 1e6).toFixed(0)}jt</span>
             </div>
-            <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-white/[0.04]">
+            <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border">
               <span className="text-[11px] text-dark-500">PIC:</span>
               <span className="text-[11px] font-semibold text-foreground">{p.pic}</span>
             </div>

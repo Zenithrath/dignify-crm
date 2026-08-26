@@ -174,7 +174,7 @@ export function LeadsPage() {
           <table className="w-full min-w-[900px]">
             <thead>
               {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="border-t border-white/[0.05]">
+                <tr key={hg.id} className="border-t border-border">
                   {hg.headers.map((h) => (
                     <th
                       key={h.id}
@@ -205,7 +205,7 @@ export function LeadsPage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.04]">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border">
           <p className="text-[12px] text-dark-500">
             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </p>

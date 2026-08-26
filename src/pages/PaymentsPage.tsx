@@ -47,7 +47,7 @@ export function PaymentsPage() {
       <div className="card overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-t border-white/[0.05]">
+            <tr className="border-t border-border">
               <th className="table-header">Type</th>
               <th className="table-header">Amount</th>
               <th className="table-header">Due Date</th>

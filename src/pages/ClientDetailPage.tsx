@@ -148,7 +148,7 @@ export function ClientDetailPage() {
                 <Link
                   key={project.id}
                   to={`/projects/${project.id}`}
-                  className="block p-4 rounded-2xl bg-dark-900 border border-white/[0.04] hover:bg-dark-750 hover:border-border transition-colors cursor-pointer group"
+                  className="block p-4 rounded-2xl bg-dark-900 border border-border hover:bg-dark-750 hover:border-border transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
                     <h3 className="font-bold text-foreground">{project.projectName}</h3>

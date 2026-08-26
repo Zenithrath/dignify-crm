@@ -76,7 +76,7 @@ function KanbanCard({ lead }: KanbanCardProps) {
         </span>
       </div>
       {lead.nextFollowUp && (
-        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-white/[0.04] text-[10px] text-dark-500">
+        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border text-[10px] text-dark-500">
           <Clock className="w-3 h-3" />
           <span>Follow-up: {lead.nextFollowUp}</span>
         </div>
@@ -101,7 +101,7 @@ function KanbanColumn({ stage, leads, dot }: KanbanColumnProps) {
           {leads.length}
         </span>
       </div>
-      <div className="flex-1 rounded-lg p-2 space-y-2 min-h-[180px] border bg-white/[0.02] border-white/[0.05]">
+      <div className="flex-1 rounded-lg p-2 space-y-2 min-h-[180px] border bg-foreground/[0.03] border-border">
         <SortableContext items={leads.map((l) => l.id)} strategy={verticalListSortingStrategy}>
           {leads.map((lead) => (
             <KanbanCard key={lead.id} lead={lead} />

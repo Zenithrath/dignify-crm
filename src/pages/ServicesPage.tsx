@@ -44,7 +44,7 @@ export function ServicesPage() {
               <span className="text-dark-400">{s.level}</span>
               <span className="font-bold text-orange-400">Rp {(s.minimumPrice / 1e6).toFixed(0)}-{(s.maximumPrice / 1e6).toFixed(0)}jt</span>
             </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04] text-[11px] text-dark-500">
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border text-[11px] text-dark-500">
               <span>{s.estimatedDuration}</span>
               <span className={s.active ? 'text-emerald-400' : 'text-dark-500'}>{s.active ? 'Active' : 'Inactive'}</span>
             </div>

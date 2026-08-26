@@ -93,7 +93,7 @@ export function ContentSchedulePage() {
               {items.map((item) => {
                 const Icon = typeIcon[item.type] || FileText;
                 return (
-                  <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04] hover:border-border transition-all">
+                  <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-foreground/[0.03] border border-border hover:border-border transition-all">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                       item.type.includes('Instagram') ? 'bg-pink-500/10 border border-pink-500/20' :
                       item.type === 'TikTok' ? 'bg-dark-700 border border-border' :

@@ -60,7 +60,7 @@ export function TasksPage() {
                   <h3 className="text-[13px] font-bold text-foreground">{col.label}</h3>
                   <span className="text-[10px] font-bold text-dark-500 bg-foreground/[0.04] rounded px-1.5 py-0.5">{tasks.length}</span>
                 </div>
-                <div className="flex-1 rounded-lg p-2 space-y-2 min-h-[200px] bg-white/[0.02] border border-white/[0.05]">
+                <div className="flex-1 rounded-lg p-2 space-y-2 min-h-[200px] bg-foreground/[0.03] border border-border">
                   {tasks.map((task) => (
                     <div key={task.id} className="card glass p-3">
                       <p className="font-semibold text-foreground text-[13px] mb-1">{task.title}</p>
@@ -72,7 +72,7 @@ export function TasksPage() {
                           {task.dueDate}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-white/[0.04] text-[11px] text-dark-400">
+                      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border text-[11px] text-dark-400">
                         <User className="w-3 h-3" />
                         {task.assignedTo}
                       </div>
@@ -90,7 +90,7 @@ export function TasksPage() {
         <div className="card overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-t border-white/[0.05]">
+              <tr className="border-t border-border">
                 <th className="table-header">Task</th>
                 <th className="table-header">Assignee</th>
                 <th className="table-header">Priority</th>

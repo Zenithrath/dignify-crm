@@ -109,7 +109,7 @@ export function DealsTable({ leads }: DealsTableProps) {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all cursor-pointer ${
               hotOnly
                 ? 'bg-ember/10 border-ember/30 text-ember-bright'
-                : 'bg-foreground/[0.04] border-white/[0.07] text-dark-300 hover:text-foreground'
+                : 'bg-foreground/[0.04] border-border text-dark-300 hover:text-foreground'
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.8} />
@@ -117,7 +117,7 @@ export function DealsTable({ leads }: DealsTableProps) {
           </button>
           <button
             onClick={cycleSort}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-foreground/[0.04] border border-white/[0.07] text-dark-300 hover:text-foreground transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-foreground/[0.04] border border-border text-dark-300 hover:text-foreground transition-all cursor-pointer"
           >
             <ArrowUpDown className="w-3.5 h-3.5" strokeWidth={1.8} />
             Sort
@@ -134,7 +134,7 @@ export function DealsTable({ leads }: DealsTableProps) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[860px]">
           <thead>
-            <tr className="border-t border-white/[0.05]">
+            <tr className="border-t border-border">
               <th className="table-header !w-12">
                 <input
                   type="checkbox"
@@ -162,7 +162,7 @@ export function DealsTable({ leads }: DealsTableProps) {
               </tr>
             ) : (
               filtered.map((lead) => (
-                <tr key={lead.id} className={`table-row ${selected.has(lead.id) ? 'bg-white/[0.02]' : ''}`}>
+                <tr key={lead.id} className={`table-row ${selected.has(lead.id) ? 'bg-foreground/[0.03]' : ''}`}>
                   <td className="table-cell">
                     <input
                       type="checkbox"
