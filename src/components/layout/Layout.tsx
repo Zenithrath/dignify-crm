@@ -1,10 +1,10 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, GitBranch, Briefcase,
-  FolderKanban, CheckSquare, CreditCard, Settings,
+  LayoutDashboard, Users, KanbanSquare, Briefcase,
+  CheckSquare, CreditCard, Settings,
   Search, ChevronRight, Menu as MenuIcon, X,
-  House, LogOut, Layers, Calendar,
+  House, LogOut, Layers, Calendar, CalendarDays,
   PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react';
 import { useGSAP } from '@gsap/react';
@@ -20,11 +20,11 @@ const navSections = [
     items: [
       { path: '/', label: 'Dashboard', icon: LayoutDashboard },
       { path: '/leads', label: 'Leads', icon: Users },
-      { path: '/pipeline', label: 'Pipeline', icon: GitBranch },
+      { path: '/work', label: 'Work', icon: KanbanSquare },
       { path: '/clients', label: 'Clients', icon: Briefcase },
-      { path: '/projects', label: 'Projects', icon: FolderKanban },
       { path: '/tasks', label: 'Tasks', icon: CheckSquare },
       { path: '/content', label: 'Content', icon: Calendar },
+      { path: '/calendar', label: 'Calendar', icon: CalendarDays },
     ],
   },
   {
@@ -39,11 +39,11 @@ const navSections = [
 const pageTitles: Record<string, string> = {
   '/': 'Overviews',
   '/leads': 'Leads',
-  '/pipeline': 'Pipeline',
+  '/work': 'Work',
   '/clients': 'Clients',
-  '/projects': 'Projects',
   '/tasks': 'Tasks',
   '/content': 'Content Schedule',
+  '/calendar': 'Calendar',
   '/payments': 'Payments',
   '/services': 'Services',
   '/team': 'Team',
