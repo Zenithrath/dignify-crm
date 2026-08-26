@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Lead, Client, Project, Task, Payment, DashboardData } from '../types';
+import type { Lead, Client, Project, Task, Payment, DashboardData, Work, ContentItem, Rotation } from '../types';
 
 interface UseApiState<T> {
   data: T | null;
@@ -368,6 +368,243 @@ export function useDashboard() {
           { type: 'Meeting', title: 'StartupHub - Discovery call', date: 'Today', leadId: 'LEAD-2026-0002' },
           { type: 'Deadline', title: 'UMKM Bakery - Website delivery', date: 'Tomorrow', projectId: 'PRJ-2026-0001' },
         ],
+      };
+      setState({ data: mockData, loading: false, error: null });
+    } catch (e) {
+      setState({ data: null, loading: false, error: (e as Error).message });
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return { ...state, refetch: fetchData };
+}
+
+export function useWorks() {
+  const [state, setState] = useState<UseApiState<Work[]>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  const fetchData = async () => {
+    setState({ ...state, loading: true, error: null });
+    try {
+      const mockData: Work[] = [
+        {
+          id: 'WORK-2026-0001',
+          name: 'PT Maju Jaya - Company Profile Video',
+          type: 'Paid Outbound',
+          partner: 'PT Maju Jaya',
+          pic: 'Daniel',
+          teamMembers: ['Daniel', 'Ignas'],
+          value: 35000000,
+          benefit: 'Company profile untuk website dan investor',
+          startDate: '2026-08-10',
+          deadline: '2026-09-04',
+          stage: 'Revision',
+          driveLink: 'https://drive.google.com/drive/folders/majujaya-profile',
+          notes: 'Revisi naskah round 2 dari klien',
+          createdAt: '2026-08-08',
+          updatedAt: '2026-08-25',
+        },
+        {
+          id: 'WORK-2026-0002',
+          name: 'PT Berkah Sejahtera - Katalog Produk Digital',
+          type: 'Paid Inbound',
+          partner: 'PT Berkah Sejahtera',
+          pic: 'Ignas',
+          teamMembers: ['Ignas', 'Daniel'],
+          value: 18000000,
+          benefit: 'Katalog produk digital untuk tim sales',
+          startDate: '2026-08-17',
+          deadline: '2026-09-11',
+          stage: 'Approval',
+          driveLink: 'https://drive.google.com/drive/folders/berkah-katalog',
+          notes: 'Menunggu approval desain final',
+          createdAt: '2026-08-14',
+          updatedAt: '2026-08-24',
+        },
+        {
+          id: 'WORK-2026-0003',
+          name: 'Kampus Tech Community - Seminar Konten Collab',
+          type: 'Collab',
+          partner: 'Kampus Tech Community',
+          pic: 'Daniel',
+          teamMembers: ['Daniel', 'Ignas'],
+          value: 0,
+          benefit: 'Exposure ke audiens kampus dan lead generation',
+          startDate: '2026-08-20',
+          deadline: '2026-09-18',
+          stage: 'Production',
+          driveLink: 'https://drive.google.com/drive/folders/kampustech-collab',
+          notes: 'Barter konten seminar nasional',
+          createdAt: '2026-08-15',
+          updatedAt: '2026-08-26',
+        },
+        {
+          id: 'WORK-2026-0004',
+          name: 'UMKM Bakery Kita - Instagram Content Pack',
+          type: 'Paid Outbound',
+          partner: 'UMKM Bakery Kita',
+          pic: 'Daniel',
+          teamMembers: ['Daniel'],
+          value: 12000000,
+          benefit: '12 konten Instagram per bulan',
+          startDate: '2026-08-03',
+          deadline: '2026-08-31',
+          stage: 'Delivery',
+          driveLink: 'https://drive.google.com/drive/folders/bakerykita-content',
+          notes: 'Batch akhir bulan tinggal 2 desain',
+          createdAt: '2026-07-30',
+          updatedAt: '2026-08-26',
+        },
+        {
+          id: 'WORK-2026-0005',
+          name: 'Personal Brand Kevin - YouTube Editing Series',
+          type: 'Paid Inbound',
+          partner: 'Kevin Anggara',
+          pic: 'Ignas',
+          teamMembers: ['Ignas'],
+          value: 9000000,
+          benefit: 'Editing 8 video YouTube per bulan',
+          startDate: '2026-08-24',
+          deadline: '2026-09-30',
+          stage: 'Brief',
+          driveLink: 'https://drive.google.com/drive/folders/kevin-youtube',
+          notes: 'Kickoff brief sudah dijadwalkan',
+          createdAt: '2026-08-22',
+          updatedAt: '2026-08-24',
+        },
+      ];
+      setState({ data: mockData, loading: false, error: null });
+    } catch (e) {
+      setState({ data: null, loading: false, error: (e as Error).message });
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return { ...state, refetch: fetchData };
+}
+
+export function useContentItems() {
+  const [state, setState] = useState<UseApiState<ContentItem[]>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  const fetchData = async () => {
+    setState({ ...state, loading: true, error: null });
+    try {
+      const mockData: ContentItem[] = [
+        {
+          id: 'CONTENT-2026-0001',
+          title: 'Tips UMKM: Branding Murah yang Terasa Mahal',
+          platform: 'Instagram',
+          designPic: 'Daniel',
+          editorPic: 'Ignas',
+          copywriter: 'Ignas',
+          status: 'Published',
+          publishDate: '2026-08-25',
+          isLive: true,
+          notes: 'Carousel 5 slide, engagement bagus',
+        },
+        {
+          id: 'CONTENT-2026-0002',
+          title: 'Behind the Scenes Agency Agustus',
+          platform: 'TikTok',
+          designPic: 'Daniel',
+          editorPic: 'Ignas',
+          copywriter: 'Ignas',
+          status: 'Scheduled',
+          publishDate: '2026-08-28',
+          isLive: false,
+          notes: 'Format video pendek 45 detik',
+        },
+        {
+          id: 'CONTENT-2026-0003',
+          title: 'Testimoni Klien: Klinik Sehat Prima',
+          platform: 'Instagram',
+          designPic: 'Daniel',
+          editorPic: 'Ignas',
+          copywriter: 'Daniel',
+          status: 'Review',
+          publishDate: '2026-09-01',
+          isLive: false,
+          notes: 'Menunggu review copy final',
+        },
+        {
+          id: 'CONTENT-2026-0004',
+          title: 'Tutorial Editing CapCut untuk Pemula',
+          platform: 'YouTube',
+          designPic: 'Ignas',
+          editorPic: 'Ignas',
+          copywriter: 'Ignas',
+          status: 'Designing',
+          publishDate: '2026-09-05',
+          isLive: false,
+          notes: 'Thumbnail belum final',
+        },
+        {
+          id: 'CONTENT-2026-0005',
+          title: 'Pengumuman Layanan Baru: Company Profile Video',
+          platform: 'LinkedIn',
+          designPic: 'Daniel',
+          editorPic: 'Ignas',
+          copywriter: 'Daniel',
+          status: 'Draft',
+          publishDate: '2026-09-10',
+          isLive: false,
+          notes: 'Target audiens HRD dan founder',
+        },
+        {
+          id: 'CONTENT-2026-0006',
+          title: 'Reels Produk Unggulan UMKM Bakery Kita',
+          platform: 'Instagram',
+          designPic: 'Daniel',
+          editorPic: 'Ignas',
+          copywriter: 'Ignas',
+          status: 'Scheduled',
+          publishDate: '2026-08-27',
+          isLive: false,
+          notes: 'Jadwal prime time jam 19.00',
+        },
+      ];
+      setState({ data: mockData, loading: false, error: null });
+    } catch (e) {
+      setState({ data: null, loading: false, error: (e as Error).message });
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return { ...state, refetch: fetchData };
+}
+
+export function useRotation() {
+  const [state, setState] = useState<UseApiState<Rotation>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  const fetchData = async () => {
+    setState({ ...state, loading: true, error: null });
+    try {
+      const mockData: Rotation = {
+        designPic: 'Daniel',
+        designQuarter: 'Q3 2026',
+        editorPic: 'Ignas',
+        editorWeekStart: '2026-08-24',
+        weeklyTarget: 1,
       };
       setState({ data: mockData, loading: false, error: null });
     } catch (e) {

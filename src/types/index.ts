@@ -219,3 +219,54 @@ export interface AuditLog {
   recordId: string;
   details: string;
 }
+
+export type WorkType = 'Paid Outbound' | 'Paid Inbound' | 'Collab';
+
+export const WORK_TYPES: WorkType[] = ['Paid Outbound', 'Paid Inbound', 'Collab'];
+
+export const WORK_STAGES: Record<WorkType, string[]> = {
+  'Paid Outbound': ['Brief', 'Design', 'Revision', 'Approval', 'Delivery', 'Completed'],
+  'Paid Inbound': ['Brief', 'Design', 'Revision', 'Approval', 'Delivery', 'Completed'],
+  Collab: ['Discussion', 'Agreement', 'Production', 'Launch', 'Completed'],
+};
+
+export interface Work {
+  id: string;
+  name: string;
+  type: WorkType;
+  partner: string;
+  pic: string;
+  teamMembers: string[];
+  value: number;
+  benefit: string;
+  startDate: string;
+  deadline: string;
+  stage: string;
+  driveLink: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ContentStatus = 'Draft' | 'Designing' | 'Review' | 'Scheduled' | 'Published';
+
+export interface ContentItem {
+  id: string;
+  title: string;
+  platform: 'Instagram' | 'TikTok' | 'LinkedIn' | 'YouTube' | 'Other';
+  designPic: string;
+  editorPic: string;
+  copywriter: string;
+  status: ContentStatus;
+  publishDate: string;
+  isLive: boolean;
+  notes: string;
+}
+
+export interface Rotation {
+  designPic: string;
+  designQuarter: string;
+  editorPic: string;
+  editorWeekStart: string;
+  weeklyTarget: number;
+}
