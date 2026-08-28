@@ -5,6 +5,8 @@ import {
   Bell,
   List,
   X,
+  ListPlus,
+  Code,
 } from '@phosphor-icons/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { DashboardProvider } from '../../contexts/DashboardContext';
@@ -53,6 +55,14 @@ export function Layout({ children }: LayoutProps) {
                     <House className="w-4 h-4" />
                     <span>Dashboard</span>
                   </Link>
+                  <Link to="/pipeline" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
+                    <ListPlus className="w-4 h-4" />
+                    <span>Pipeline & Deal</span>
+                  </Link>
+                  <Link to="/development" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
+                    <Code className="w-4 h-4" />
+                    <span>Progress Dev</span>
+                  </Link>
                 </nav>
               </div>
               <div className="pt-4 border-t border-white/10 flex items-center gap-3">
@@ -86,6 +96,24 @@ export function Layout({ children }: LayoutProps) {
                     </Link>
                   } />
                   <TooltipContent side="right">Dashboard</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Link to="/pipeline" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/pipeline' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
+                      <ListPlus className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  } />
+                  <TooltipContent side="right">Pipeline & Deal</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Link to="/development" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/development' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
+                      <Code className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  } />
+                  <TooltipContent side="right">Progress Dev</TooltipContent>
                 </Tooltip>
               </nav>
             </div>

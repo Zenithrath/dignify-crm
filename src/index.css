@@ -177,7 +177,8 @@
     border-color: #D8FF3F;
     box-shadow: 0 0 0 2px rgba(216, 255, 63, 0.2);
   }
-  .select { padding-right: 2rem; cursor: pointer; appearance: none; }
+  .select { padding-right: 2.25rem; cursor: pointer; appearance: none; background-image: none; }
+  select option { background: #1B1D25; color: #F4F6FA; padding: 0.5rem 0.75rem; }
 
   /* Badges */
   .badge {

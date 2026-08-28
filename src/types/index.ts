@@ -248,6 +248,113 @@ export interface Work {
   updatedAt: string;
 }
 
+// ── Pipeline & Deal ───────────────────────────────────────────────────────────
+
+export type DealType = 'Paid Outbound' | 'Paid Inbound' | 'Kerjasama-Engagement';
+
+export type DealStage =
+  | 'Prospecting'
+  | 'Approval Internal'
+  | 'Development'
+  | 'Review'
+  | 'Deploy';
+
+export type InvoiceStatus = 'Belum ditagih' | 'Ditagih' | 'Lunas';
+
+export type TestimonialStatus = 'Belum diminta' | 'Diminta' | 'Diterima';
+
+export interface DealInvoice {
+  nominal: number;
+  status: InvoiceStatus;
+  jatuhTempo: string;
+}
+
+export interface DealMaintenance {
+  active: boolean;
+  catatanRequest: string;
+}
+
+export interface DealTestimonial {
+  status: TestimonialStatus;
+  linkOrText: string;
+}
+
+export interface DealActivity {
+  id: string;
+  timestamp: string;
+  user: string;
+  action: string;
+  details: string;
+}
+
+export interface Deal {
+  id: string;
+  namaKlien: string;
+  tipe: DealType;
+  estimasiValue: number;
+  pic: string;
+  deadline: string;
+  nextAction: string;
+  stage: DealStage;
+  briefFile?: string;
+  catatan: string;
+  invoice?: DealInvoice;
+  maintenance?: DealMaintenance;
+  testimonial?: DealTestimonial;
+  activities: DealActivity[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const DEAL_STAGES: DealStage[] = [
+  'Prospecting',
+  'Approval Internal',
+  'Development',
+  'Review',
+  'Deploy',
+];
+
+export const DEAL_TYPES: DealType[] = [
+  'Paid Outbound',
+  'Paid Inbound',
+  'Kerjasama-Engagement',
+];
+
+// ── Progress Development ─────────────────────────────────────────────────────
+
+export type DevRole = 'Web Dev' | 'UI/UX' | 'n8n Automation' | 'SEO';
+
+export type DevStatus = 'Belum mulai' | 'Progress' | 'Review' | 'Selesai';
+
+export interface DevTask {
+  id: string;
+  title: string;
+  done: boolean;
+}
+
+export interface DevSwimlane {
+  role: DevRole;
+  status: DevStatus;
+  pic: string;
+  progress: number;
+  tasks: DevTask[];
+  catatanTerakhir: string;
+}
+
+export interface DevProject {
+  id: string;
+  namaProject: string;
+  namaKlien: string;
+  deadline: string;
+  createdAt: string;
+  updatedAt: string;
+  swimlanes: DevSwimlane[];
+}
+
+export const DEV_ROLES: DevRole[] = ['Web Dev', 'UI/UX', 'n8n Automation', 'SEO'];
+
+export const DEV_STATUSES: DevStatus[] = ['Belum mulai', 'Progress', 'Review', 'Selesai'];
+
 export type ContentStatus = 'Draft' | 'Designing' | 'Review' | 'Scheduled' | 'Published';
 
 export interface ContentItem {
