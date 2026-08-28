@@ -355,19 +355,47 @@ export const DEV_ROLES: DevRole[] = ['Web Dev', 'UI/UX', 'n8n Automation', 'SEO'
 
 export const DEV_STATUSES: DevStatus[] = ['Belum mulai', 'Progress', 'Review', 'Selesai'];
 
-export type ContentStatus = 'Draft' | 'Designing' | 'Review' | 'Scheduled' | 'Published';
+// ── Progress Content ─────────────────────────────────────────────────────────
+
+export type ContentPlatform = 'Instagram' | 'TikTok' | 'LinkedIn' | 'YouTube';
+
+export type ContentKanbanStage =
+  | 'Ide'
+  | 'Draft copy'
+  | 'Menunggu ACC Ignas'
+  | 'Desain'
+  | 'Review'
+  | 'Terjadwal'
+  | 'Published';
+
+export type ContentType = 'Feed' | 'Reels' | 'Story' | 'Carousel' | 'Video' | 'Article';
+
+export interface ContentComment {
+  id: string;
+  user: string;
+  text: string;
+  timestamp: string;
+}
 
 export interface ContentItem {
   id: string;
   title: string;
-  platform: 'Instagram' | 'TikTok' | 'LinkedIn' | 'YouTube' | 'Other';
-  designPic: string;
-  editorPic: string;
-  copywriter: string;
-  status: ContentStatus;
-  publishDate: string;
-  isLive: boolean;
-  notes: string;
+  platform: ContentPlatform;
+  tipe?: ContentType;
+  captionWriter?: string;
+  designer?: string;
+  stage?: ContentKanbanStage;
+  publishDate?: string;
+  caption?: string;
+  comments?: ContentComment[];
+  createdAt?: string;
+  updatedAt?: string;
+  designPic?: string;
+  editorPic?: string;
+  copywriter?: string;
+  status?: string;
+  notes?: string;
+  isLive?: boolean;
 }
 
 export interface Rotation {
@@ -377,3 +405,26 @@ export interface Rotation {
   editorWeekStart: string;
   weeklyTarget: number;
 }
+
+export interface PlatformPerformance {
+  platform: ContentPlatform;
+  followers: number;
+  engagement: number;
+  postsPerWeek: number;
+  postsPending: number;
+  growth: number;
+}
+
+export const CONTENT_PLATFORMS: ContentPlatform[] = ['Instagram', 'TikTok', 'LinkedIn', 'YouTube'];
+
+export const CONTENT_KANBAN_STAGES: ContentKanbanStage[] = [
+  'Ide',
+  'Draft copy',
+  'Menunggu ACC Ignas',
+  'Desain',
+  'Review',
+  'Terjadwal',
+  'Published',
+];
+
+export const CONTENT_TYPES: ContentType[] = ['Feed', 'Reels', 'Story', 'Carousel', 'Video', 'Article'];

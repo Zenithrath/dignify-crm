@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { DevProject, DevStatus } from '../types';
+import type { DevProject, DevStatus, DevSwimlane } from '../types';
+import { DEV_ROLES } from '../types';
 
 interface UseApiState<T> {
   data: T | null;
@@ -128,6 +129,19 @@ const MOCK_PROJECTS: DevProject[] = [
   },
 ];
 
+let nextId = 100;
+
+function makeSwimlaneDefaults(): DevSwimlane[] {
+  return DEV_ROLES.map((role) => ({
+    role,
+    status: 'Belum mulai' as DevStatus,
+    pic: '-',
+    progress: 0,
+    tasks: [],
+    catatanTerakhir: '',
+  }));
+}
+
 export function useDevelopment() {
   const [state, setState] = useState<UseApiState<DevProject[]>>({
     data: null,
@@ -144,6 +158,39 @@ export function useDevelopment() {
     }
   };
 
+  const addProject = (namaProject: string, namaKlien: string, deadline: string) => {
+    const now = new Date().toISOString().slice(0, 10);
+    const newProject: DevProject = {
+      id: `DEV-${++nextId}`,
+      namaProject,
+      namaKlien,
+      deadline,
+      createdAt: now,
+      updatedAt: now,
+      swimlanes: makeSwimlaneDefaults(),
+    };
+    setState((prev) => ({
+      ...prev,
+      data: prev.data ? [...prev.data, newProject] : [newProject],
+    }));
+  };
+
+  const updateProject = (projectId: string, updates: Partial<Pick<DevProject, 'namaProject' | 'namaKlien' | 'deadline'>>) => {
+    setState((prev) => ({
+      ...prev,
+      data: prev.data
+        ? prev.data.map((p) => (p.id === projectId ? { ...p, ...updates, updatedAt: new Date().toISOString().slice(0, 10) } : p))
+        : prev.data,
+    }));
+  };
+
+  const deleteProject = (projectId: string) => {
+    setState((prev) => ({
+      ...prev,
+      data: prev.data ? prev.data.filter((p) => p.id !== projectId) : prev.data,
+    }));
+  };
+
   const toggleTask = (projectId: string, swimlaneRole: string, taskId: string) => {
     setState((prev) => ({
       ...prev,
@@ -155,12 +202,74 @@ export function useDevelopment() {
               updatedAt: new Date().toISOString().slice(0, 10),
               swimlanes: p.swimlanes.map((sl) => {
                 if (sl.role !== swimlaneRole) return sl;
-                const updatedTasks = sl.tasks.map((t) =>
-                  t.id === taskId ? { ...t, done: !t.done } : t
-                );
+                const updatedTasks = sl.tasks.map((t) => (t.id === taskId ? { ...t, done: !t.done } : t));
                 const doneCount = updatedTasks.filter((t) => t.done).length;
                 const newProgress = Math.round((doneCount / updatedTasks.length) * 100);
                 return { ...sl, tasks: updatedTasks, progress: newProgress };
+              }),
+            };
+          })
+        : prev.data,
+    }));
+  };
+
+  const addTask = (projectId: string, swimlaneRole: string, title: string) => {
+    setState((prev) => ({
+      ...prev,
+      data: prev.data
+        ? prev.data.map((p) => {
+            if (p.id !== projectId) return p;
+            return {
+              ...p,
+              updatedAt: new Date().toISOString().slice(0, 10),
+              swimlanes: p.swimlanes.map((sl) => {
+                if (sl.role !== swimlaneRole) return sl;
+                const newTask = { id: `T${++nextId}`, title, done: false };
+                const updatedTasks = [...sl.tasks, newTask];
+                const doneCount = updatedTasks.filter((t) => t.done).length;
+                const newProgress = Math.round((doneCount / updatedTasks.length) * 100);
+                return { ...sl, tasks: updatedTasks, progress: newProgress };
+              }),
+            };
+          })
+        : prev.data,
+    }));
+  };
+
+  const deleteTask = (projectId: string, swimlaneRole: string, taskId: string) => {
+    setState((prev) => ({
+      ...prev,
+      data: prev.data
+        ? prev.data.map((p) => {
+            if (p.id !== projectId) return p;
+            return {
+              ...p,
+              updatedAt: new Date().toISOString().slice(0, 10),
+              swimlanes: p.swimlanes.map((sl) => {
+                if (sl.role !== swimlaneRole) return sl;
+                const updatedTasks = sl.tasks.filter((t) => t.id !== taskId);
+                const doneCount = updatedTasks.filter((t) => t.done).length;
+                const newProgress = updatedTasks.length > 0 ? Math.round((doneCount / updatedTasks.length) * 100) : 0;
+                return { ...sl, tasks: updatedTasks, progress: newProgress };
+              }),
+            };
+          })
+        : prev.data,
+    }));
+  };
+
+  const editTaskTitle = (projectId: string, swimlaneRole: string, taskId: string, newTitle: string) => {
+    setState((prev) => ({
+      ...prev,
+      data: prev.data
+        ? prev.data.map((p) => {
+            if (p.id !== projectId) return p;
+            return {
+              ...p,
+              updatedAt: new Date().toISOString().slice(0, 10),
+              swimlanes: p.swimlanes.map((sl) => {
+                if (sl.role !== swimlaneRole) return sl;
+                return { ...sl, tasks: sl.tasks.map((t) => (t.id === taskId ? { ...t, title: newTitle } : t)) };
               }),
             };
           })
@@ -177,9 +286,7 @@ export function useDevelopment() {
             return {
               ...p,
               updatedAt: new Date().toISOString().slice(0, 10),
-              swimlanes: p.swimlanes.map((sl) =>
-                sl.role === swimlaneRole ? { ...sl, ...updates } : sl
-              ),
+              swimlanes: p.swimlanes.map((sl) => (sl.role === swimlaneRole ? { ...sl, ...updates } : sl)),
             };
           })
         : prev.data,
@@ -190,5 +297,16 @@ export function useDevelopment() {
     fetchData();
   }, []);
 
-  return { ...state, refetch: fetchData, toggleTask, updateSwimlane };
+  return {
+    ...state,
+    refetch: fetchData,
+    addProject,
+    updateProject,
+    deleteProject,
+    toggleTask,
+    addTask,
+    deleteTask,
+    editTaskTitle,
+    updateSwimlane,
+  };
 }

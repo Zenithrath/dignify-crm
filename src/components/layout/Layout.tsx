@@ -7,6 +7,7 @@ import {
   X,
   ListPlus,
   Code,
+  Calendar,
 } from '@phosphor-icons/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { DashboardProvider } from '../../contexts/DashboardContext';
@@ -63,6 +64,10 @@ export function Layout({ children }: LayoutProps) {
                     <Code className="w-4 h-4" />
                     <span>Progress Dev</span>
                   </Link>
+                  <Link to="/content" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
+                    <Calendar className="w-4 h-4" />
+                    <span>Progress Content</span>
+                  </Link>
                 </nav>
               </div>
               <div className="pt-4 border-t border-white/10 flex items-center gap-3">
@@ -114,6 +119,15 @@ export function Layout({ children }: LayoutProps) {
                     </Link>
                   } />
                   <TooltipContent side="right">Progress Dev</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Link to="/content" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/content' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
+                      <Calendar className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  } />
+                  <TooltipContent side="right">Progress Content</TooltipContent>
                 </Tooltip>
               </nav>
             </div>

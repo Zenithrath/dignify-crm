@@ -5,6 +5,11 @@ import {
   User,
   NotePencil,
   CaretDown,
+  Plus,
+  Trash,
+  Pencil,
+  X,
+  Check as CheckIcon,
 } from '@phosphor-icons/react';
 import type { DevSwimlane, DevStatus } from '../../types';
 
@@ -16,6 +21,9 @@ interface SwimlaneCardProps {
   deadline: string;
   onToggleTask: (projectId: string, swimlaneRole: string, taskId: string) => void;
   onUpdateSwimlane: (projectId: string, swimlaneRole: string, updates: Partial<{ status: DevStatus; pic: string; catatanTerakhir: string }>) => void;
+  onAddTask: (projectId: string, swimlaneRole: string, title: string) => void;
+  onDeleteTask: (projectId: string, swimlaneRole: string, taskId: string) => void;
+  onEditTaskTitle: (projectId: string, swimlaneRole: string, taskId: string, newTitle: string) => void;
 }
 
 const statusColor: Record<DevStatus, string> = {
@@ -32,10 +40,19 @@ const progressColor = (p: number) => {
   return 'bg-white/10';
 };
 
-export function SwimlaneCard({ swimlane, projectId, projectName, clientName, deadline, onToggleTask, onUpdateSwimlane }: SwimlaneCardProps) {
+export function SwimlaneCard({
+  swimlane, projectId, projectName, clientName, deadline,
+  onToggleTask, onUpdateSwimlane, onAddTask, onDeleteTask, onEditTaskTitle,
+}: SwimlaneCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [editingCatatan, setEditingCatatan] = useState(false);
   const [catatanText, setCatatanText] = useState(swimlane.catatanTerakhir);
+  const [editingPic, setEditingPic] = useState(false);
+  const [picText, setPicText] = useState(swimlane.pic);
+  const [addingTask, setAddingTask] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingTaskTitle, setEditingTaskTitle] = useState('');
   const doneCount = swimlane.tasks.filter((t) => t.done).length;
 
   function handleStatusCycle(e: React.MouseEvent) {
@@ -51,21 +68,39 @@ export function SwimlaneCard({ swimlane, projectId, projectName, clientName, dea
     setEditingCatatan(false);
   }
 
+  function handleSavePic() {
+    onUpdateSwimlane(projectId, swimlane.role, { pic: picText || '-' });
+    setEditingPic(false);
+  }
+
+  function handleAddTask() {
+    if (newTaskTitle.trim()) {
+      onAddTask(projectId, swimlane.role, newTaskTitle.trim());
+      setNewTaskTitle('');
+      setAddingTask(false);
+    }
+  }
+
+  function handleSaveTaskTitle(taskId: string) {
+    if (editingTaskTitle.trim()) {
+      onEditTaskTitle(projectId, swimlane.role, taskId, editingTaskTitle.trim());
+    }
+    setEditingTaskId(null);
+  }
+
   return (
     <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden hover:border-white/[0.08] transition-colors">
-      {/* ── Card Header (always visible) ── */}
+      {/* ── Card Header ── */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-4 px-5 py-4 cursor-pointer text-left"
       >
-        {/* Chevron */}
         <CaretDown
           size={16}
           weight="bold"
           className={`text-white/25 transition-transform duration-200 flex-shrink-0 ${expanded ? 'rotate-180' : ''}`}
         />
 
-        {/* Project info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2.5">
             <span className="text-[13px] font-bold text-white/80 truncate">{projectName}</span>
@@ -76,7 +111,6 @@ export function SwimlaneCard({ swimlane, projectId, projectName, clientName, dea
           </div>
         </div>
 
-        {/* Status chip */}
         <button
           onClick={handleStatusCycle}
           className={`text-[10px] font-semibold px-3 py-1 rounded-full cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 ${statusColor[swimlane.status]}`}
@@ -84,13 +118,11 @@ export function SwimlaneCard({ swimlane, projectId, projectName, clientName, dea
           {swimlane.status}
         </button>
 
-        {/* PIC */}
         <div className="flex items-center gap-1.5 text-[11px] text-white/40 min-w-[60px] flex-shrink-0">
           <User size={11} weight="fill" className="text-white/25" />
           <span>{swimlane.pic}</span>
         </div>
 
-        {/* Progress mini */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="w-14 h-1.5 bg-white/5 rounded-full overflow-hidden">
             <div
@@ -101,7 +133,6 @@ export function SwimlaneCard({ swimlane, projectId, projectName, clientName, dea
           <span className="text-[11px] font-bold text-white/50 w-7 text-right">{swimlane.progress}%</span>
         </div>
 
-        {/* Tasks */}
         <div className="flex items-center gap-1 text-[10px] text-white/30 flex-shrink-0">
           <Check size={10} weight="bold" className={doneCount === swimlane.tasks.length ? 'text-[#D8FF3F]' : 'text-white/20'} />
           <span>{doneCount}/{swimlane.tasks.length}</span>
@@ -111,29 +142,121 @@ export function SwimlaneCard({ swimlane, projectId, projectName, clientName, dea
       {/* ── Expanded Detail ── */}
       {expanded && (
         <div className="px-5 pb-5 border-t border-white/[0.04]">
-          {/* Checklist */}
-          <div className="flex flex-col gap-1 mt-4 mb-4">
-            {swimlane.tasks.map((task) => (
+          {/* PIC editable */}
+          <div className="flex items-center gap-3 mt-4 mb-3 px-1">
+            <div className="flex items-center gap-1.5 text-[11px] text-white/35">
+              <User size={12} weight="fill" />
+              <span>PIC:</span>
+            </div>
+            {editingPic ? (
+              <div className="flex items-center gap-1.5">
+                <input
+                  value={picText}
+                  onChange={(e) => setPicText(e.target.value)}
+                  className="input !h-7 !text-[11px] w-32"
+                  autoFocus
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSavePic(); if (e.key === 'Escape') { setEditingPic(false); setPicText(swimlane.pic); } }}
+                />
+                <button onClick={handleSavePic} className="p-1 rounded-md hover:bg-[#D8FF3F]/10 text-[#D8FF3F] cursor-pointer">
+                  <CheckIcon size={12} weight="bold" />
+                </button>
+                <button onClick={() => { setEditingPic(false); setPicText(swimlane.pic); }} className="p-1 rounded-md hover:bg-white/5 text-white/30 cursor-pointer">
+                  <X size={12} weight="bold" />
+                </button>
+              </div>
+            ) : (
               <button
-                key={task.id}
-                onClick={() => onToggleTask(projectId, swimlane.role, task.id)}
-                className="flex items-center gap-2.5 py-1.5 cursor-pointer group/task text-left"
+                onClick={() => setEditingPic(true)}
+                className="flex items-center gap-1.5 text-[11px] text-white/50 hover:text-white/70 px-2 py-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
               >
-                {task.done ? (
-                  <div className="w-4 h-4 rounded-md bg-[#D8FF3F] flex items-center justify-center flex-shrink-0">
-                    <Check size={10} weight="bold" className="text-black" />
-                  </div>
-                ) : (
-                  <div className="w-4 h-4 rounded-md border border-white/15 flex items-center justify-center flex-shrink-0 group-hover/task:border-white/30 transition-colors">
-                    <Circle size={10} className="text-transparent" />
-                  </div>
-                )}
-                <span className={`text-[12px] ${task.done ? 'text-white/30 line-through' : 'text-white/55'}`}>
-                  {task.title}
-                </span>
+                <span>{swimlane.pic}</span>
+                <Pencil size={10} weight="bold" className="text-white/25" />
               </button>
+            )}
+          </div>
+
+          {/* Checklist */}
+          <div className="flex flex-col gap-1 mb-3">
+            {swimlane.tasks.map((task) => (
+              <div key={task.id} className="flex items-center gap-2 group/task">
+                <button
+                  onClick={() => onToggleTask(projectId, swimlane.role, task.id)}
+                  className="flex items-center gap-2.5 py-1.5 cursor-pointer flex-1 text-left"
+                >
+                  {task.done ? (
+                    <div className="w-4 h-4 rounded-md bg-[#D8FF3F] flex items-center justify-center flex-shrink-0">
+                      <Check size={10} weight="bold" className="text-black" />
+                    </div>
+                  ) : (
+                    <div className="w-4 h-4 rounded-md border border-white/15 flex items-center justify-center flex-shrink-0 group-hover/task:border-white/30 transition-colors">
+                      <Circle size={10} className="text-transparent" />
+                    </div>
+                  )}
+                  {editingTaskId === task.id ? (
+                    <div className="flex items-center gap-1.5 flex-1">
+                      <input
+                        value={editingTaskTitle}
+                        onChange={(e) => setEditingTaskTitle(e.target.value)}
+                        className="input !h-6 !text-[11px] flex-1"
+                        autoFocus
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSaveTaskTitle(task.id); if (e.key === 'Escape') setEditingTaskId(null); }}
+                        onBlur={() => handleSaveTaskTitle(task.id)}
+                      />
+                    </div>
+                  ) : (
+                    <span
+                      className={`text-[12px] ${task.done ? 'text-white/30 line-through' : 'text-white/55'}`}
+                      onDoubleClick={() => { setEditingTaskId(task.id); setEditingTaskTitle(task.title); }}
+                    >
+                      {task.title}
+                    </span>
+                  )}
+                </button>
+                <div className="flex items-center gap-0.5 opacity-0 group-hover/task:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => { setEditingTaskId(task.id); setEditingTaskTitle(task.title); }}
+                    className="p-1 rounded-md hover:bg-white/5 text-white/20 hover:text-white/50 cursor-pointer"
+                  >
+                    <Pencil size={10} weight="bold" />
+                  </button>
+                  <button
+                    onClick={() => onDeleteTask(projectId, swimlane.role, task.id)}
+                    className="p-1 rounded-md hover:bg-[#FF5A5A]/10 text-white/20 hover:text-[#FF5A5A] cursor-pointer"
+                  >
+                    <Trash size={10} weight="bold" />
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
+
+          {/* Add task */}
+          {addingTask ? (
+            <div className="flex items-center gap-2 mb-3 pl-6">
+              <input
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                className="input !h-7 !text-[11px] flex-1"
+                placeholder="Nama task baru..."
+                autoFocus
+                onKeyDown={(e) => { if (e.key === 'Enter') handleAddTask(); if (e.key === 'Escape') { setAddingTask(false); setNewTaskTitle(''); } }}
+              />
+              <button onClick={handleAddTask} className="p-1 rounded-md hover:bg-[#D8FF3F]/10 text-[#D8FF3F] cursor-pointer">
+                <CheckIcon size={12} weight="bold" />
+              </button>
+              <button onClick={() => { setAddingTask(false); setNewTaskTitle(''); }} className="p-1 rounded-md hover:bg-white/5 text-white/30 cursor-pointer">
+                <X size={12} weight="bold" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAddingTask(true)}
+              className="flex items-center gap-1.5 text-[11px] text-white/25 hover:text-[#D8FF3F] transition-colors cursor-pointer mb-3 pl-6"
+            >
+              <Plus size={12} weight="bold" />
+              <span>Tambah task</span>
+            </button>
+          )}
 
           {/* Catatan */}
           <div className="bg-white/[0.02] rounded-xl border border-white/[0.04] p-3 flex flex-col gap-2">

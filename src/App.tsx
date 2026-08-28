@@ -3,6 +3,7 @@ import { Layout } from './components/layout/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { PipelinePage } from './pages/PipelinePage';
 import { DevelopmentPage } from './pages/DevelopmentPage';
+import { ContentPage } from './pages/ContentPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/pipeline" element={<PipelinePage />} />
           <Route path="/development" element={<DevelopmentPage />} />
+          <Route path="/content" element={<ContentPage />} />
           <Route path="*" element={<DashboardPage />} />
         </Routes>
       </Layout>
