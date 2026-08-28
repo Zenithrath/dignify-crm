@@ -428,3 +428,28 @@ export const CONTENT_KANBAN_STAGES: ContentKanbanStage[] = [
 ];
 
 export const CONTENT_TYPES: ContentType[] = ['Feed', 'Reels', 'Story', 'Carousel', 'Video', 'Article'];
+
+// ── Follow-up WhatsApp ──────────────────────────────────────────────────────
+
+export type WAStatus = 'Nunggu respon' | 'Sudah dibalas' | 'Perlu follow-up';
+
+export interface WAMessage {
+  id: string;
+  sender: 'client' | 'humas';
+  text: string;
+  timestamp: string;
+}
+
+export interface WAConversation {
+  id: string;
+  namaKlien: string;
+  nomorWA: string;
+  lastMessage: string;
+  status: WAStatus;
+  picHumas: string;
+  lastChatAt: string;
+  unread: number;
+  messages: WAMessage[];
+}
+
+export const WA_STATUSES: WAStatus[] = ['Nunggu respon', 'Sudah dibalas', 'Perlu follow-up'];

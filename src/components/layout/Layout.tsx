@@ -8,6 +8,7 @@ import {
   ListPlus,
   Code,
   Calendar,
+  ChatCircle,
 } from '@phosphor-icons/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { DashboardProvider } from '../../contexts/DashboardContext';
@@ -67,6 +68,10 @@ export function Layout({ children }: LayoutProps) {
                   <Link to="/content" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
                     <Calendar className="w-4 h-4" />
                     <span>Progress Content</span>
+                  </Link>
+                  <Link to="/followup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
+                    <ChatCircle className="w-4 h-4" />
+                    <span>Follow-up WA</span>
                   </Link>
                 </nav>
               </div>
@@ -128,6 +133,15 @@ export function Layout({ children }: LayoutProps) {
                     </Link>
                   } />
                   <TooltipContent side="right">Progress Content</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Link to="/followup" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/followup' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
+                      <ChatCircle className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  } />
+                  <TooltipContent side="right">Follow-up WA</TooltipContent>
                 </Tooltip>
               </nav>
             </div>

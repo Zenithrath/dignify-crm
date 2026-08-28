@@ -4,6 +4,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { PipelinePage } from './pages/PipelinePage';
 import { DevelopmentPage } from './pages/DevelopmentPage';
 import { ContentPage } from './pages/ContentPage';
+import { WhatsAppPage } from './pages/WhatsAppPage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/pipeline" element={<PipelinePage />} />
           <Route path="/development" element={<DevelopmentPage />} />
           <Route path="/content" element={<ContentPage />} />
+          <Route path="/followup" element={<WhatsAppPage />} />
           <Route path="*" element={<DashboardPage />} />
         </Routes>
       </Layout>
