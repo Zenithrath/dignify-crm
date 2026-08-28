@@ -453,3 +453,40 @@ export interface WAConversation {
 }
 
 export const WA_STATUSES: WAStatus[] = ['Nunggu respon', 'Sudah dibalas', 'Perlu follow-up'];
+
+// ── Kalender ────────────────────────────────────────────────────────────────
+
+export type CalendarEventType = 'Deadline Project' | 'Jadwal Posting' | 'Briefing' | 'Update Klien';
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  type: CalendarEventType;
+  date: string;
+  time: string;
+  description: string;
+  relatedProject?: string;
+}
+
+export const CALENDAR_EVENT_TYPES: CalendarEventType[] = [
+  'Deadline Project',
+  'Jadwal Posting',
+  'Briefing',
+  'Update Klien',
+];
+
+// ── Team ────────────────────────────────────────────────────────────────────
+
+export interface TeamMember {
+  id: string;
+  nama: string;
+  role: string;
+  avatar: string;
+  color: string;
+}
+
+export const TEAM_MEMBERS: TeamMember[] = [
+  { id: 'TM1', nama: 'Rina', role: 'Copywriter & Social Media', avatar: 'R', color: '#E1306C' },
+  { id: 'TM2', nama: 'Daniel', role: 'Web Developer & SEO', avatar: 'D', color: '#4CD7E0' },
+  { id: 'TM3', nama: 'Ignas', role: 'UI/UX Designer & Automation', avatar: 'I', color: '#A89AE8' },
+];

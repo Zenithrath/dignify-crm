@@ -5,6 +5,8 @@ import { PipelinePage } from './pages/PipelinePage';
 import { DevelopmentPage } from './pages/DevelopmentPage';
 import { ContentPage } from './pages/ContentPage';
 import { WhatsAppPage } from './pages/WhatsAppPage';
+import { CalendarPage } from './pages/CalendarPage';
+import { TeamPage } from './pages/TeamPage';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/development" element={<DevelopmentPage />} />
           <Route path="/content" element={<ContentPage />} />
           <Route path="/followup" element={<WhatsAppPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/team" element={<TeamPage />} />
           <Route path="*" element={<DashboardPage />} />
         </Routes>
       </Layout>
