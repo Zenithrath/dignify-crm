@@ -8,8 +8,10 @@ import {
   ListPlus,
   Code,
   Calendar,
-  ChatCircle,
   Users,
+  Database,
+  CurrencyCircleDollar,
+  AddressBook,
 } from '@phosphor-icons/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import { DashboardProvider } from '../../contexts/DashboardContext';
@@ -56,31 +58,35 @@ export function Layout({ children }: LayoutProps) {
                 <nav className="flex flex-col gap-2">
                   <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all bg-[#D8FF3F] text-black font-bold shadow-[0_0_15px_rgba(216,255,63,0.3)]">
                     <House className="w-4 h-4" />
-                    <span>Dashboard</span>
+                    <span>Hari Ini</span>
+                  </Link>
+                  <Link to="/leads" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
+                    <Database className="w-4 h-4" />
+                    <span>Leads</span>
                   </Link>
                   <Link to="/pipeline" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
                     <ListPlus className="w-4 h-4" />
-                    <span>Pipeline & Deal</span>
+                    <span>Pipeline</span>
+                  </Link>
+                  <Link to="/closing" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
+                    <CurrencyCircleDollar className="w-4 h-4" />
+                    <span>Closing</span>
+                  </Link>
+                  <Link to="/clients" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
+                    <AddressBook className="w-4 h-4" />
+                    <span>Klien</span>
                   </Link>
                   <Link to="/development" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
                     <Code className="w-4 h-4" />
-                    <span>Progress Dev</span>
+                    <span>Project</span>
                   </Link>
                   <Link to="/content" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
                     <Calendar className="w-4 h-4" />
-                    <span>Progress Content</span>
-                  </Link>
-                  <Link to="/followup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
-                    <ChatCircle className="w-4 h-4" />
-                    <span>Follow-up WA</span>
-                  </Link>
-                  <Link to="/calendar" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
-                    <Calendar className="w-4 h-4" />
-                    <span>Kalender</span>
+                    <span>Konten</span>
                   </Link>
                   <Link to="/team" onClick={() => setMobileOpen(false)} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/[0.06]">
                     <Users className="w-4 h-4" />
-                    <span>Team</span>
+                    <span>Tim</span>
                   </Link>
                 </nav>
               </div>
@@ -107,14 +113,23 @@ export function Layout({ children }: LayoutProps) {
               </Link>
 
               {/* Nav */}
-              <nav className="flex flex-col items-center gap-3">
+              <nav className="flex flex-col items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger render={
                     <Link to="/" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
                       <House className="w-[19px] h-[19px]" strokeWidth={2} />
                     </Link>
                   } />
-                  <TooltipContent side="right">Dashboard</TooltipContent>
+                  <TooltipContent side="right">Hari Ini</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Link to="/leads" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/leads' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
+                      <Database className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  } />
+                  <TooltipContent side="right">Leads Database</TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
@@ -123,7 +138,25 @@ export function Layout({ children }: LayoutProps) {
                       <ListPlus className="w-[19px] h-[19px]" strokeWidth={2} />
                     </Link>
                   } />
-                  <TooltipContent side="right">Pipeline & Deal</TooltipContent>
+                  <TooltipContent side="right">Pipeline Outreach</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Link to="/closing" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/closing' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
+                      <CurrencyCircleDollar className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  } />
+                  <TooltipContent side="right">Closing & Keuangan</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Link to="/clients" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/clients' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
+                      <AddressBook className="w-[19px] h-[19px]" strokeWidth={2} />
+                    </Link>
+                  } />
+                  <TooltipContent side="right">Buku Klien</TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
@@ -132,7 +165,7 @@ export function Layout({ children }: LayoutProps) {
                       <Code className="w-[19px] h-[19px]" strokeWidth={2} />
                     </Link>
                   } />
-                  <TooltipContent side="right">Progress Dev</TooltipContent>
+                  <TooltipContent side="right">Project</TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
@@ -141,25 +174,7 @@ export function Layout({ children }: LayoutProps) {
                       <Calendar className="w-[19px] h-[19px]" strokeWidth={2} />
                     </Link>
                   } />
-                  <TooltipContent side="right">Progress Content</TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger render={
-                    <Link to="/followup" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/followup' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
-                      <ChatCircle className="w-[19px] h-[19px]" strokeWidth={2} />
-                    </Link>
-                  } />
-                  <TooltipContent side="right">Follow-up WA</TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger render={
-                    <Link to="/calendar" className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${location.pathname === '/calendar' ? 'bg-[#D8FF3F] text-black shadow-[0_0_20px_rgba(216,255,63,0.4)] font-bold' : 'text-white/40 hover:text-white hover:bg-white/[0.06]'}`}>
-                      <Calendar className="w-[19px] h-[19px]" strokeWidth={2} />
-                    </Link>
-                  } />
-                  <TooltipContent side="right">Kalender</TooltipContent>
+                  <TooltipContent side="right">Konten</TooltipContent>
                 </Tooltip>
 
                 <Tooltip>
@@ -168,7 +183,7 @@ export function Layout({ children }: LayoutProps) {
                       <Users className="w-[19px] h-[19px]" strokeWidth={2} />
                     </Link>
                   } />
-                  <TooltipContent side="right">Team</TooltipContent>
+                  <TooltipContent side="right">Tim & Jobdesk</TooltipContent>
                 </Tooltip>
               </nav>
             </div>

@@ -1,404 +1,199 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
-  Users,
-  Briefcase,
-  CheckSquare,
-  Clock,
-  Phone,
-  Envelope,
-  Calendar,
-  ChartLineUp,
-  Pen,
-  Globe,
-  Video,
+  Warning, Calendar, Phone, FunnelSimple, Briefcase,
+  CurrencyCircleDollar, Article, UsersThree, CheckCircle, Circle,
 } from '@phosphor-icons/react';
 import { useDashboard } from '../contexts/DashboardContext';
+import { useJobdesk } from '../hooks/useJobdesk';
+import { useLeadsDB } from '../hooks/useLeadsDB';
+import { useClosingBook } from '../hooks/useClosingBook';
+import {
+  businessKPI, funnel, businessProjects,
+  contentRolling, rateCard, formatShortIDR, formatIDR,
+} from '../data/businessSnapshot';
 
-const statusColor: Record<string, string> = {
-  'Planning': 'bg-[#A89AE8]/15 text-[#A89AE8]',
-  'In Progress': 'bg-[#FFD043]/15 text-[#FFD043]',
-  'Review': 'bg-[#4CD7E0]/15 text-[#4CD7E0]',
-  'Completed': 'bg-[#D8FF3F]/15 text-[#D8FF3F]',
-  'On Hold': 'bg-[#FF5A5A]/15 text-[#FF5A5A]',
-};
+type Tab = 'hari' | 'jualan' | 'uang' | 'konten';
 
-const clientStatusColor: Record<string, string> = {
-  Active: 'bg-[#D8FF3F]/15 text-[#D8FF3F]',
-  Lead: 'bg-[#FFD043]/15 text-[#FFD043]',
-  Inactive: 'bg-white/10 text-white/40',
-};
-
-const stepColor: Record<string, string> = {
-  Done: 'bg-[#D8FF3F] text-black',
-  'In Progress': 'bg-[#FFD043] text-black',
-  Todo: 'bg-white/10 text-white/40',
-  '—': 'bg-white/5 text-white/20',
-};
-
-const platformIcon: Record<string, typeof Globe> = {
-  Instagram: Globe,
-  TikTok: Video,
-  LinkedIn: Globe,
-};
-
-const socialStatusColor: Record<string, string> = {
-  Good: 'bg-[#D8FF3F]/15 text-[#D8FF3F]',
-  'Needs Attention': 'bg-[#FFD043]/15 text-[#FFD043]',
-  Low: 'bg-[#FF5A5A]/15 text-[#FF5A5A]',
-};
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'hari', label: 'Hari Ini' },
+  { id: 'jualan', label: 'Jualan' },
+  { id: 'uang', label: 'Project & Uang' },
+  { id: 'konten', label: 'Konten & Tim' },
+];
 
 export function DashboardPage() {
-  const { user, analytics, projects, contentWeek, contentMonth, socialMedia, clientContacts } = useDashboard();
+  const [tab, setTab] = useState<Tab>('hari');
+  const { contentWeek, contentMonth } = useDashboard();
+  const { pasif, aktif, donePasif, doneAktif, totalPasif, totalAktif, toggle } = useJobdesk();
+  const { leads } = useLeadsDB();
+  const { items, totalNilai, belumLunas } = useClosingBook();
+
+  const overdueFU = leads.filter((l) => l.status === 'Minta Proposal' || (l.nextFU && l.nextFU < '2026-09-10'));
+  const rutinHariIni = pasif.filter((t) => !t.done).slice(0, 4);
+  const aktifJalan = aktif.filter((t) => !t.done).slice(0, 4);
 
   return (
     <div className="w-full max-w-[1400px] mx-auto flex flex-col gap-4 pb-6">
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* TOP: USER PROFILE BAR (full-width)                                        */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-2xl rounded-[22px] px-6 py-4 flex items-center justify-between relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-20 -left-20 w-60 h-60 rounded-full bg-[#D8FF3F]/[0.04] blur-[80px]" />
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full object-cover border-2 border-white/15 shadow-lg" />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#D8FF3F] border-2 border-[#17181F] flex items-center justify-center">
-              <CheckSquare size={10} weight="bold" className="text-black" />
-            </span>
-          </div>
-          <div>
-            <h1 className="text-base font-bold text-white">{user.name}</h1>
-            <p className="text-[11px] text-white/50">{user.role} · {user.department}</p>
-          </div>
+      {/* Header ramping */}
+      <div className="bg-[#D8FF3F] text-black rounded-[22px] px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-black/50">Dignify · Hari ini</p>
+          <h1 className="text-lg font-extrabold tracking-tight">Kerjakan yang overdue dulu, sisanya ngikutin</h1>
         </div>
-        <div className="hidden sm:flex items-center gap-4 text-[11px] text-white/40">
-          <span className="flex items-center gap-1.5"><Envelope size={12} />{user.email}</span>
-          <span className="flex items-center gap-1.5"><Phone size={12} />{user.phone}</span>
-          <span className="bg-white/5 px-2.5 py-1 rounded-full text-[10px] text-white/30">{user.employeeId}</span>
+        <div className="flex gap-2 text-[12px] font-bold">
+          <Link to="/leads" className="bg-black text-[#D8FF3F] px-4 py-2.5 rounded-xl">Leads</Link>
+          <Link to="/pipeline" className="bg-black/10 px-4 py-2.5 rounded-xl">Pipeline</Link>
+          <Link to="/closing" className="bg-black/10 px-4 py-2.5 rounded-xl">Closing</Link>
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* WEEKLY OVERVIEW + CONTENT STATUS                                         */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Monthly Overview Big Card */}
-        <div className="bg-[#D8FF3F] text-black rounded-[22px] p-6 flex flex-col justify-between relative overflow-hidden">
-          <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-black/[0.05] blur-[40px]" />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-black/50 uppercase tracking-wider">Monthly Overview</span>
-            <ChartLineUp size={20} weight="bold" className="text-black/40" />
+      {/* 5 KPI saja */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        {[
+          { l: 'FU perlu aksi', v: String(Math.max(overdueFU.length, businessKPI.followUpOverdue)), s: 'overdue, hubungi dulu' },
+          { l: 'Leads belum sentuh', v: String(leads.filter((x) => x.status === 'Belum').length), s: `dari ${businessKPI.totalLeads} di Sheet` },
+          { l: 'Project aktif', v: String(businessProjects.length), s: '1 pengerjaan + 2 waiting' },
+          { l: 'Belum lunas', v: String(belumLunas), s: formatIDR(totalNilai) },
+          { l: 'Rutin vs Aktif', v: `${donePasif + doneAktif}/${totalPasif + totalAktif}`, s: 'tugas selesai' },
+        ].map((k) => (
+          <div key={k.l} className="bg-[#17181F]/70 border border-white/[0.07] rounded-[18px] p-4">
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{k.l}</p>
+            <p className="text-2xl font-extrabold text-white mt-1">{k.v}</p>
+            <p className="text-[10px] text-white/35 mt-0.5">{k.s}</p>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-4">
-            <div className="bg-black/5 rounded-[14px] p-3">
-              <p className="text-2xl font-extrabold tracking-tight">{analytics.projectsAccepted}</p>
-              <span className="text-[10px] font-bold text-black/50">Project Diterima</span>
-            </div>
-            <div className="bg-black/5 rounded-[14px] p-3">
-              <p className="text-2xl font-extrabold tracking-tight">{analytics.projectsCompleted}</p>
-              <span className="text-[10px] font-bold text-black/50">Project Selesai</span>
-            </div>
-            <div className="bg-black/5 rounded-[14px] p-3">
-              <p className="text-2xl font-extrabold tracking-tight">{analytics.contentPublished}</p>
-              <span className="text-[10px] font-bold text-black/50">Konten Publish</span>
-            </div>
-            <div className="bg-black/5 rounded-[14px] p-3">
-              <p className="text-2xl font-extrabold tracking-tight">{analytics.newClients}</p>
-              <span className="text-[10px] font-bold text-black/50">Client Baru</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Content Status 2x2 */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: 'Konten Publish', value: analytics.contentPublished, icon: CheckSquare, color: 'text-[#D8FF3F]', bg: 'bg-[#D8FF3F]/10' },
-            { label: 'Belum Publish', value: analytics.contentPending, icon: Clock, color: 'text-[#FFD043]', bg: 'bg-[#FFD043]/10' },
-            { label: 'Tasks Selesai', value: analytics.tasksDone, icon: CheckSquare, color: 'text-[#4CD7E0]', bg: 'bg-[#4CD7E0]/10' },
-            { label: 'Follow-up Pending', value: analytics.followUpsPending, icon: Clock, color: 'text-[#FF5A5A]', bg: 'bg-[#FF5A5A]/10' },
-          ].map((item) => (
-            <div key={item.label} className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-xl rounded-[18px] p-4 flex flex-col gap-2 hover:bg-white/[0.03] transition-all">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider">{item.label}</span>
-                <div className={`w-7 h-7 rounded-full ${item.bg} flex items-center justify-center`}>
-                  <item.icon size={14} weight="bold" className={item.color} />
-                </div>
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <p className="text-2xl font-extrabold text-white">{item.value}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* PROJECTS LIST                                                             */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-2xl rounded-[22px] p-5 flex flex-col gap-4 relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-16 left-1/4 w-56 h-56 rounded-full bg-[#A89AE8]/[0.04] blur-[80px]" />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Briefcase size={16} weight="bold" className="text-[#A89AE8]" />
-            <h2 className="text-sm font-bold text-white">Projects</h2>
-          </div>
-          <span className="text-[10px] text-white/30 bg-white/5 px-2.5 py-1 rounded-full">{projects.length} total</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {projects.map((project) => (
-            <div key={project.id} className="bg-[#1C1E26]/50 border border-white/[0.05] rounded-[16px] p-4 hover:bg-white/[0.03] transition-all cursor-pointer group">
-              <div className="flex items-center justify-between mb-3">
-                <div className="min-w-0">
-                  <p className="text-[13px] font-bold text-white truncate">{project.name}</p>
-                  <p className="text-[10px] text-white/40 mt-0.5">{project.client}</p>
-                </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${statusColor[project.status]}`}>
-                  {project.status}
-                </span>
-              </div>
-
-              {/* Progress */}
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#D8FF3F] rounded-full transition-all"
-                    style={{ width: `${project.progress}%` }}
-                  />
-                </div>
-                <span className="text-sm font-extrabold text-[#D8FF3F] w-10 text-right">{project.progress}%</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-white/30 flex items-center gap-1">
-                  <CheckSquare size={10} />
-                  {project.tasksDone}/{project.tasksTotal} tasks
-                </span>
-                <span className="text-[10px] text-white/30 flex items-center gap-1">
-                  <Calendar size={10} />
-                  {project.deadline}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Tab */}
+      <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[18px] p-1.5 flex gap-1 overflow-x-auto">
+        {TABS.map((t) => (
+          <button key={t.id} onClick={() => setTab(t.id)} className={`flex-1 whitespace-nowrap px-4 py-2 rounded-xl text-[12px] font-bold cursor-pointer ${tab === t.id ? 'bg-[#D8FF3F] text-black' : 'text-white/50 hover:text-white'}`}>
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* CONTENT SCHEDULE + SOCIAL MEDIA                                           */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Content This Week */}
-        <div className="lg:col-span-2 bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-2xl rounded-[22px] p-5 flex flex-col gap-4 relative overflow-hidden">
-          <div className="pointer-events-none absolute -top-16 right-1/3 w-48 h-48 rounded-full bg-[#FFD043]/[0.04] blur-[70px]" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Pen size={16} weight="bold" className="text-[#FFD043]" />
-              <h2 className="text-sm font-bold text-white">Content This Week</h2>
+      {tab === 'hari' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-[#17181F]/70 border border-[#FF5A5A]/20 rounded-[22px] p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2"><Warning size={16} className="text-[#FF5A5A]" /> Wajib hari ini</h2>
+              <Link to="/pipeline" className="text-[11px] font-bold text-[#D8FF3F]">Pipeline →</Link>
             </div>
-            <span className="text-[10px] text-white/30 bg-white/5 px-2.5 py-1 rounded-full">{contentWeek.length} items</span>
+            {overdueFU.slice(0, 3).map((l) => (
+              <div key={l.id} className="bg-white/[0.03] border border-white/5 rounded-[14px] px-4 py-3">
+                <p className="text-[13px] font-bold text-white">{l.bisnis} <span className="text-white/30">· {l.id}</span></p>
+                <p className="text-[11px] text-white/45 mt-0.5">FU {l.nextFU || 'segera'} · {l.wa} · {l.catatan || l.status}</p>
+              </div>
+            ))}
+            <div className="bg-white/[0.03] border border-white/5 rounded-[14px] px-4 py-3">
+              <p className="text-[13px] font-bold text-white">Tagih pelunasan Arsitek Studio Malang</p>
+              <p className="text-[11px] text-white/45 mt-0.5">DP lunas 50% · sisa 50% · deadline 20/09 · <Link to="/closing" className="text-[#D8FF3F] font-bold">Buka Closing →</Link></p>
+            </div>
           </div>
-
-          {/* Header */}
-          <div className="grid grid-cols-[1fr_80px_80px_80px_90px] items-center text-[9px] font-bold text-white/30 uppercase tracking-wider px-4">
-            <span>Content</span>
-            <span className="text-center">Writing</span>
-            <span className="text-center">Editing</span>
-            <span className="text-center">Upload</span>
-            <span className="text-right">Date</span>
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2"><Calendar size={16} className="text-[#4CD7E0]" /> Rutin hari ini (Pasif)</h2>
+              <Link to="/team" className="text-[11px] font-bold text-[#D8FF3F]">Tim →</Link>
+            </div>
+            {rutinHariIni.map((t) => (
+              <button key={t.id} onClick={() => toggle(t.id)} className="flex items-center gap-3 bg-white/[0.02] border border-white/5 rounded-[12px] px-3.5 py-2.5 text-left cursor-pointer">
+                {t.done ? <CheckCircle size={16} className="text-[#D8FF3F]" /> : <Circle size={16} className="text-white/30" />}
+                <span className="flex-1 min-w-0"><span className="text-[12px] text-white/70 block truncate">{t.tugas}</span><span className="text-[10px] text-white/30">{t.nama} · {t.cadence} · {t.target}</span></span>
+              </button>
+            ))}
+            <h3 className="text-[11px] font-bold text-white/40 uppercase tracking-wider mt-1">Aktif jalan (Per Project)</h3>
+            {aktifJalan.map((t) => (
+              <button key={t.id} onClick={() => toggle(t.id)} className="flex items-center gap-3 bg-white/[0.02] border border-white/5 rounded-[12px] px-3.5 py-2.5 text-left cursor-pointer">
+                {t.done ? <CheckCircle size={16} className="text-[#D8FF3F]" /> : <Circle size={16} className="text-white/30" />}
+                <span className="flex-1 min-w-0"><span className="text-[12px] text-white/70 block truncate">{t.tugas}</span><span className="text-[10px] text-white/30">{t.nama} · {t.role}</span></span>
+              </button>
+            ))}
           </div>
+        </div>
+      )}
 
-          <div className="flex flex-col gap-1.5">
-            {contentWeek.map((item) => (
-              <div key={item.id} className="bg-[#1C1E26]/50 border border-white/[0.05] rounded-[14px] px-4 py-3 grid grid-cols-[1fr_80px_80px_80px_90px] items-center hover:bg-white/[0.03] transition-all cursor-pointer group">
-                <div className="min-w-0 pr-3">
-                  <p className="text-[12px] font-bold text-white truncate">{item.title}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[10px] text-white/40">{item.platform}</span>
-                    <span className="text-[10px] text-white/20">·</span>
-                    <span className="text-[10px] text-white/40 truncate">{item.project}</span>
-                  </div>
-                </div>
+      {tab === 'jualan' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-3"><FunnelSimple size={16} className="text-[#D8FF3F]" /> Funnel</h2>
+            {funnel.map((f) => (
+              <div key={f.label} className="mb-3">
+                <div className="flex justify-between text-[12px] mb-1"><span className="text-white font-bold">{f.label}</span><span className="text-[#D8FF3F] font-extrabold">{f.value}</span></div>
+                <div className="h-2 bg-white/5 rounded-full"><div className="h-full bg-[#D8FF3F] rounded-full" style={{ width: `${Math.max((f.value / 884) * 100, 2)}%` }} /></div>
+              </div>
+            ))}
+            <Link to="/leads" className="text-[11px] font-bold text-[#D8FF3F]">Buka Leads →</Link>
+          </div>
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-3"><Phone size={16} className="text-[#FFD043]" /> Perlu dihubungi</h2>
+            {leads.filter((l) => l.status === 'Belum').slice(0, 4).map((l) => (
+              <p key={l.id} className="text-[12px] text-white/60 py-1.5 border-b border-white/5">{l.bisnis} <span className="text-white/30">· {l.review.toLocaleString('id-ID')} review · {l.wa}</span></p>
+            ))}
+            <Link to="/pipeline" className="text-[11px] font-bold text-[#D8FF3F]">Buka Pipeline →</Link>
+          </div>
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5">
+            <h2 className="text-sm font-bold text-white mb-3">Contekan harga</h2>
+            {rateCard.slice(0, 5).map((r) => (
+              <p key={r.kategori} className="text-[12px] text-white/60 py-1 border-b border-white/5">{r.kategori} <span className="text-[#D8FF3F] font-bold float-right">{formatShortIDR(r.hargaMin)}–{formatShortIDR(r.hargaMax)}</span></p>
+            ))}
+            <Link to="/pipeline" className="text-[11px] font-bold text-[#D8FF3F]">Pakai saat nawar →</Link>
+          </div>
+        </div>
+      )}
 
-                {['writing', 'editing', 'uploading'].map((step) => (
-                  <div key={step} className="flex justify-center">
-                    <span className={`text-[9px] font-bold px-3 py-1 rounded-full w-full max-w-[72px] text-center ${stepColor[item[step as keyof typeof item] as string]}`}>
-                      {item[step as keyof typeof item] as string}
-                    </span>
-                  </div>
-                ))}
-
-                <span className="text-[10px] text-white/30 text-right">{item.scheduledDate}</span>
+      {tab === 'uang' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2"><Briefcase size={16} className="text-[#A89AE8]" /> Project</h2>
+              <Link to="/development" className="text-[11px] font-bold text-[#D8FF3F]">Development →</Link>
+            </div>
+            {businessProjects.map((p) => (
+              <div key={p.id} className="flex items-center gap-3 py-2 border-b border-white/5">
+                <div className="flex-1 min-w-0"><p className="text-[12px] font-bold text-white truncate">{p.namaProject}</p><p className="text-[10px] text-white/35">{p.klien} · {p.pic} · {p.deadline}</p></div>
+                <span className="text-[12px] font-extrabold text-[#D8FF3F]">{p.progress}%</span>
+              </div>
+            ))}
+          </div>
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2"><CurrencyCircleDollar size={16} className="text-[#D8FF3F]" /> Uang</h2>
+              <Link to="/closing" className="text-[11px] font-bold text-[#D8FF3F]">Closing →</Link>
+            </div>
+            {items.map((c) => (
+              <div key={c.idLead} className="flex items-center gap-3 py-2 border-b border-white/5">
+                <p className="flex-1 text-[12px] text-white/70 truncate">{c.namaBisnis}</p>
+                <p className="text-[12px] font-bold text-white">{formatShortIDR(c.nilai)}</p>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.statusPelunasan === 'Lunas' ? 'bg-[#D8FF3F]/15 text-[#D8FF3F]' : 'bg-[#FF5A5A]/15 text-[#FF5A5A]'}`}>{c.statusPelunasan}</span>
               </div>
             ))}
           </div>
         </div>
+      )}
 
-        {/* Social Media */}
-        <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-2xl rounded-[22px] p-5 flex flex-col gap-4 relative overflow-hidden">
-          <div className="pointer-events-none absolute -bottom-16 left-10 w-40 h-40 rounded-full bg-[#FF5A5A]/[0.04] blur-[60px]" />
-          <div className="flex items-center gap-2">
-            <ChartLineUp size={16} weight="bold" className="text-[#FF5A5A]" />
-            <h2 className="text-sm font-bold text-white">Social Media</h2>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            {socialMedia.map((sm) => {
-              const Icon = platformIcon[sm.platform] || Globe;
-              return (
-                <div key={sm.id} className="bg-[#1C1E26]/50 border border-white/[0.05] rounded-[16px] p-4 hover:bg-white/[0.03] transition-all cursor-pointer">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-white/[0.05] flex items-center justify-center">
-                        <Icon size={16} weight="bold" className="text-white/60" />
-                      </div>
-                      <div>
-                        <p className="text-[12px] font-bold text-white">{sm.platform}</p>
-                        <p className="text-[10px] text-white/40">{sm.handle}</p>
-                      </div>
-                    </div>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${socialStatusColor[sm.status]}`}>
-                      {sm.status}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="bg-white/[0.03] rounded-[10px] py-2">
-                      <p className="text-sm font-extrabold text-white">{sm.followers}</p>
-                      <p className="text-[9px] text-white/30">Followers</p>
-                    </div>
-                    <div className="bg-white/[0.03] rounded-[10px] py-2">
-                      <p className="text-sm font-extrabold text-[#D8FF3F]">{sm.engagement}</p>
-                      <p className="text-[9px] text-white/30">Engagement</p>
-                    </div>
-                    <div className="bg-white/[0.03] rounded-[10px] py-2">
-                      <p className="text-sm font-extrabold text-white">{sm.postsThisWeek}</p>
-                      <p className="text-[9px] text-white/30">Posts/Week</p>
-                    </div>
-                  </div>
-
-                  {sm.pendingPosts > 0 && (
-                    <div className="mt-2.5 flex items-center gap-1.5 text-[10px] text-[#FFD043]">
-                      <Clock size={10} />
-                      <span>{sm.pendingPosts} posts pending</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* CONTENT THIS MONTH                                                        */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-2xl rounded-[22px] p-5 flex flex-col gap-4 relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-16 left-1/3 w-48 h-48 rounded-full bg-[#A89AE8]/[0.04] blur-[70px]" />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Calendar size={16} weight="bold" className="text-[#A89AE8]" />
-            <h2 className="text-sm font-bold text-white">Content This Month</h2>
-          </div>
-          <span className="text-[10px] text-white/30 bg-white/5 px-2.5 py-1 rounded-full">{contentMonth.length} items</span>
-        </div>
-
-        {/* Header */}
-        <div className="grid grid-cols-[1fr_100px_100px_90px_100px] items-center text-[9px] font-bold text-white/30 uppercase tracking-wider px-4">
-          <span>Content</span>
-          <span className="text-center">Platform</span>
-          <span className="text-center">PIC</span>
-          <span className="text-center">Status</span>
-          <span className="text-right">Due Date</span>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          {contentMonth.map((item) => {
-            const monthStatusColor: Record<string, string> = {
-              Published: 'bg-[#D8FF3F] text-black',
-              'In Design': 'bg-[#FFD043] text-black',
-              Drafting: 'bg-[#A89AE8] text-black',
-              Scheduled: 'bg-[#4CD7E0] text-black',
-              Todo: 'bg-white/10 text-white/50',
-            };
-            return (
-              <div key={item.id} className="bg-[#1C1E26]/50 border border-white/[0.05] rounded-[14px] px-4 py-3 grid grid-cols-[1fr_100px_100px_90px_100px] items-center hover:bg-white/[0.03] transition-all cursor-pointer group">
-                <div className="min-w-0 pr-3">
-                  <p className="text-[12px] font-bold text-white truncate">{item.title}</p>
-                </div>
-
-                <div className="flex justify-center">
-                  <span className="text-[10px] text-white/50">{item.platform}</span>
-                </div>
-
-                <div className="flex justify-center">
-                  <span className="text-[10px] text-white/70 font-medium">{item.pic}</span>
-                </div>
-
-                <div className="flex justify-center">
-                  <span className={`text-[9px] font-bold px-3 py-1 rounded-full w-full max-w-[80px] text-center ${monthStatusColor[item.status]}`}>
-                    {item.status}
-                  </span>
-                </div>
-
-                <span className="text-[10px] text-white/30 text-right">{item.dueDate}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* CLIENT CONTACTS + FOLLOW-UP                                               */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <div className="bg-[#17181F]/70 border border-white/[0.07] backdrop-blur-2xl rounded-[22px] p-5 flex flex-col gap-4 relative overflow-hidden">
-        <div className="pointer-events-none absolute -bottom-16 right-1/4 w-48 h-48 rounded-full bg-[#4CD7E0]/[0.04] blur-[70px]" />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users size={16} weight="bold" className="text-[#4CD7E0]" />
-            <h2 className="text-sm font-bold text-white">Client Contacts & Follow-up</h2>
-          </div>
-          <span className="text-[10px] text-white/30 bg-white/5 px-2.5 py-1 rounded-full">{clientContacts.length} clients</span>
-        </div>
-
-        {/* Header */}
-        <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center text-[9px] font-bold text-white/30 uppercase tracking-wider px-1">
-          <span className="w-10" />
-          <span>Client</span>
-          <span className="w-28">Follow-up</span>
-          <span className="w-20 text-center">Status</span>
-          <span className="w-24 text-right">Last Contact</span>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          {clientContacts.map((client) => (
-            <div key={client.id} className="bg-[#1C1E26]/50 border border-white/[0.05] rounded-[14px] px-4 py-3 flex items-center gap-4 hover:bg-white/[0.03] transition-all cursor-pointer group">
-              <div className="relative">
-                <img src={client.avatar} alt={client.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
-                <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#1C1E26] ${
-                  client.status === 'Active' ? 'bg-[#D8FF3F]' : client.status === 'Lead' ? 'bg-[#FFD043]' : 'bg-white/30'
-                }`} />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-bold text-white truncate">{client.name}</p>
-                <p className="text-[10px] text-white/40">{client.role} · {client.company}</p>
-              </div>
-
-              <div className="w-28 min-w-0">
-                <p className="text-[11px] text-white/60 truncate">{client.followUp}</p>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <Calendar size={10} className="text-white/25" />
-                  <span className="text-[9px] text-white/30">{client.followUpDate}</span>
-                </div>
-              </div>
-
-              <span className={`w-20 text-center text-[9px] font-bold px-2 py-0.5 rounded-full ${clientStatusColor[client.status]}`}>
-                {client.status}
-              </span>
-
-              <span className="w-24 text-[10px] text-white/25 text-right">{client.lastContact}</span>
+      {tab === 'konten' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2"><Article size={16} className="text-[#E1306C]" /> Konten</h2>
+              <Link to="/content" className="text-[11px] font-bold text-[#D8FF3F]">Konten →</Link>
             </div>
-          ))}
+            <p className="text-[12px] text-white/60">Minggu ini: <b className="text-white">{contentWeek.length}</b> · Bulan ini: <b className="text-white">{contentMonth.length}</b></p>
+            {contentRolling.slice(0, 3).map((r) => (
+              <p key={r.periode} className="text-[12px] text-white/50 py-1.5 border-b border-white/5">{r.periode} · {r.pj} {r.aktif && <span className="text-[9px] bg-[#D8FF3F] text-black px-1.5 py-0.5 rounded-full ml-1">AKTIF</span>}</p>
+            ))}
+          </div>
+          <div className="bg-[#17181F]/70 border border-white/[0.07] rounded-[22px] p-5">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2"><UsersThree size={16} className="text-[#A89AE8]" /> Tim: {doneAktif}/{totalAktif} aktif · {donePasif}/{totalPasif} rutin</h2>
+              <Link to="/team" className="text-[11px] font-bold text-[#D8FF3F]">Tim →</Link>
+            </div>
+            <p className="text-[11px] text-white/40">Aktif = projectan (selesai = done). Pasif = rutin harian/mingguan/bulanan (reset tiap periode). Detail + centang ada di halaman Tim.</p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
